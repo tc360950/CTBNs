@@ -9,6 +9,11 @@ private:
 	std::unordered_map<Transition, Real_t> transition_counts;
 	size_t node;
 
+public:
+	const std::unordered_map<Transition, Real_t> &get_transition_counts() const {
+		return this->transition_counts;
+	}
+
 };
 
 #endif // !NODE_TRANSITIONS_H

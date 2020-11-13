@@ -12,6 +12,10 @@ public:
 		return this->state == other->state;
 	}
 
+	inline bool get_node_value(size_t node) const {
+		return state[node];
+	}
+
 	friend class StateHash;
 };
 
