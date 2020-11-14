@@ -1,7 +1,7 @@
 #ifndef TRANSITION_H
 #define TRANSITION_H
 #include "state.h"
-//TODO getters, new State formation, hash function
+
 class Transition {
 private:
 	State state; 
@@ -33,6 +33,16 @@ public:
 			}
 		}
 		return Transition(old_state, changing_node, new_state.get_node_value(changing_node));
+	}
+
+	friend class TransitionHash;
+};
+
+class TransitionHash {
+public:
+	size_t operator()(const TransitionHash& s) const
+	{
+		return (std::hash<std::vector<bool>>()(s->state()) + s.changing_node);
 	}
 };
 

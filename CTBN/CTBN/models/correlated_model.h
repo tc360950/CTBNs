@@ -102,7 +102,8 @@ public:
 		}
 	}
 
-	TransitionRepository<Real_t> sample_chain(Real_t t_max, const State &starting_state) const {
+	//number of jumps is returned 
+	std::pair<TransitionRepository<Real_t>, Real_t> sample_chain(Real_t t_max, const State &starting_state) const {
 		auto skeleton = simulate(t_max, starting_state);
 		return convert_skeleton_to_transition_repository(skeleton, t_max);
 	}

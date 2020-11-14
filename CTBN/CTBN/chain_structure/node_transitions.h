@@ -6,7 +6,7 @@
 
 template<class Real_t> class NodeTransitions {
 private:
-	std::unordered_map<Transition, Real_t> transition_counts;
+	std::unordered_map<Transition, Real_t, TransitionHash> transition_counts;
 	size_t node;
 
 public:

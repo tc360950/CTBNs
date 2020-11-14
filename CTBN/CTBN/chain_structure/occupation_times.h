@@ -6,7 +6,7 @@
 
 template <class Real_t> class OccupationTimes {
 private: 
-	std::unordered_map<State, Real_t> total_occupation_time;
+	std::unordered_map<State, Real_t, StateHash> total_occupation_time;
 public:
 	OccupationTimes<Real_t>() {}
 
