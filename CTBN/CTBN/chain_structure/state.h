@@ -7,9 +7,23 @@ private:
 	std::vector<bool> state;
 
 public:
+	State(std::vector<bool> state) : state{ state } {
+
+	}
+
+	State(const State &s2) { this->state = s2.state; }
+
 	bool operator==(const State &other) const
 	{
 		return this->state == other->state;
+	}
+
+	void flip_node_value(size_t node) {
+		state[node] = !state[node];
+	}
+
+	inline size_t get_size() {
+		return state.size();
 	}
 
 	inline bool get_node_value(size_t node) const {

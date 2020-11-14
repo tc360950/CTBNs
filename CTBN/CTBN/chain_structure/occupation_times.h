@@ -8,6 +8,15 @@ template <class Real_t> class OccupationTimes {
 private: 
 	std::unordered_map<State, Real_t> total_occupation_time;
 public:
+	OccupationTimes<Real_t>() {}
+
+	void add(const State &state, Real_t time) {
+		if (total_occupation_time.find(state) == total_occupation_time.end()) {
+			total_occupation_time[state] = 0.0;
+		}
+		total_occupation_time[state] += time;
+	}
+
 	Real_t get_occupation_time(const State &state) const {
 		return total_occupation_time[state];
 	}

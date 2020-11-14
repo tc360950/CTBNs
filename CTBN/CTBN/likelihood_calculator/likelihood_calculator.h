@@ -17,7 +17,6 @@ private:
 				result_placeholder[i] = state.get_node_value(i + 1);
 			}
 		}
-		return nullptr;
 	}
 
 	Real_t get_intensity(const std::vector<Real_t> &beta, const std::vector<bool> &predictive) {
