@@ -8,13 +8,13 @@
 
 template <class Real_t> class ADMMSolver {
 public:
-	const LikelihoodCalculator<Real_t> likelihood_calculator;
+	LikelihoodCalculator<Real_t> likelihood_calculator;
 private:
 	const Real_t RO = 1.0;
 	const size_t L2_ITERATIONS = 100;
 	const Real_t L2_STEP_SIZE = 0.1;
 	const Real_t EPSILON = 0.000000001;
-	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const bool past_node_value) const {
+	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const bool past_node_value) {
 		for (size_t i = 0; i < L2_ITERATIONS; i++) {
 			auto gradient_1 = likelihood_calculator.calculate_likelihood_gradient(x, node, past_node_value);
 			for (size_t n = 0; n < gradient_1.size(); n++) {
@@ -24,7 +24,7 @@ private:
 		}
 	}
 
-	void update_z(const std::vector<Real_t> &u, const std::vector<Real_t> &x, std::vector<Real_t> &z, const Real_t lambda) const {
+	void update_z(const std::vector<Real_t> &u, const std::vector<Real_t> &x, std::vector<Real_t> &z, const Real_t lambda) {
 		const Real_t k = lambda / RO;
 		for (size_t i = 0; i < z.size(); i++) {
 			if (x[i] + u[i] > k) {
@@ -39,13 +39,13 @@ private:
 		}
 	}
 
-	void update_u(const std::vector<Real_t> &z, const std::vector<Real_t> &x, std::vector<Real_t> &u) const {
+	void update_u(const std::vector<Real_t> &z, const std::vector<Real_t> &x, std::vector<Real_t> &u) {
 		for (size_t i = 0; i < u.size(); i++) {
 			u[i] = u[i] + x[i] - z[i];
 		}
 	}
 
-	Real_t get_non_zero_vector_elements(const std::vector<Real_t> &v) const {
+	Real_t get_non_zero_vector_elements(const std::vector<Real_t> &v) {
 		Real_t result = 0.0;
 		for (auto element : v) {
 			if (element > EPSILON || element < -EPSILON) {
@@ -55,7 +55,7 @@ private:
 		return result;
 	}
 
-	std::vector<Real_t> get_starting_x(const size_t vector_size) const {
+	std::vector<Real_t> get_starting_x(const size_t vector_size) {
 		std::vector<Real_t> result;
 		for (size_t i = 0; i < vector_size; i++) {
 			result.push_back(1.0);
@@ -63,7 +63,7 @@ private:
 		return result;
 	}
 
-	std::vector<Real_t> get_starting_z(const size_t vector_size) const {
+	std::vector<Real_t> get_starting_z(const size_t vector_size) {
 		std::vector<Real_t> result;
 		for (size_t i = 0; i < vector_size; i++) {
 			result.push_back(1.0);
@@ -71,7 +71,7 @@ private:
 		return result;
 	}
 
-	std::vector<Real_t> get_starting_u(const size_t vector_size) const {
+	std::vector<Real_t> get_starting_u(const size_t vector_size) {
 		std::vector<Real_t> result;
 		for (size_t i = 0; i < vector_size; i++) {
 			result.push_back(1.0);
@@ -83,7 +83,7 @@ public:
 		likelihood_calculator{ likelihood_calculator } {}
 	//TODO incijalizacja wektorow u z
 	// pierwszy element return to beta, drugi n * lik trzeci ||beta||
-	std::tuple<std::vector<Real_t>, Real_t, Real_t> solve(const size_t iterations, const size_t node, const bool past_node_value, const Real_t lambda) const {
+	std::tuple<std::vector<Real_t>, Real_t, Real_t> solve(const size_t iterations, const size_t node, const bool past_node_value, const Real_t lambda) {
 		std::vector<Real_t> x = get_starting_x(likelihood_calculator.get_parameters_size());
 		std::vector<Real_t> z = get_starting_z(likelihood_calculator.get_parameters_size());
 		std::vector<Real_t> u = get_starting_u(likelihood_calculator.get_parameters_size());

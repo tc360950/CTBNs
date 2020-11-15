@@ -9,7 +9,7 @@
 template <class Real_t, class Model> class BobDylan {
 private:
 	const size_t NUM_THREADS = 1;
-	const size_t SOLVER_ITERATIONS = 10000;
+	const size_t SOLVER_ITERATIONS = 10;
 	const Real_t MAX_LAMBDA = 100000;
 	const size_t LAMBDA_COUNT = 10;
 	//TODO fill it
@@ -43,7 +43,7 @@ private:
 		return non_zero_entries;
 	}
 
-	Result solve(const Real_t number_of_nodes, const ADMMSolver<Real_t> &solver, const Real_t number_of_jumps, const size_t node, const bool past_node_value) const {
+	Result solve(const Real_t number_of_nodes, ADMMSolver<Real_t> &solver, const Real_t number_of_jumps, const size_t node, const bool past_node_value) const {
 		std::vector<Real_t> best_so_far;
 		Real_t best_so_far_score = 0.0;
 		bool best_set = false;

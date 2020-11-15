@@ -17,7 +17,7 @@ public:
 		total_occupation_time[state] += time;
 	}
 
-	Real_t get_occupation_time(const State &state) const {
+	inline Real_t get_occupation_time(const State &state) const {
 		return total_occupation_time.at(state);
 	}
 };
