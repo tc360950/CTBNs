@@ -1,7 +1,8 @@
 #ifndef LIST_MODEL_H
 #define LIST_MODEL_H
 #include <random>
-#include <pair>
+#include <utility>
+#include <numeric>
 
 #include "../chain_structure/transition_repository.h"
 #include "model_data.h"
@@ -11,15 +12,15 @@ private:
 	std::mt19937 generator;
 	std::vector<bool> preferences;
 	
-	State sample_state(const State &current_state, const std::vector<Real_t> &intensities) const {
+	State sample_state(const State &current_state, const std::vector<Real_t> &intensities) {
 		State new_state{ current_state };
-		std::discrete_distribution<Real_t> distribution(intensities);
+		std::discrete_distribution<size_t> distribution(intensities.begin(), intensities.end());
 		auto node = distribution(generator);
 		new_state.flip_node_value(node);
 		return new_state;
 	}
 
-	std::vector<std::pair<State, Real_t>> simulate(Real_t t_max, const State &starting_state) const {
+	std::vector<std::pair<State, Real_t>> simulate(Real_t t_max, const State &starting_state) {
 		//stan + czas skoku do stanu 
 		std::vector<std::pair<State, Real_t>> skeleton; 
 		skeleton.push_back(std::make_pair(starting_state, 0.0));
@@ -32,7 +33,7 @@ private:
 			auto new_state = sample_state(current_state, intensities);
 			skeleton.push_back(std::make_pair(new_state, time));
 		}
-		skeleton.erase(skeleton.size());
+		skeleton.pop_back();
 		return skeleton;
 	}
 
@@ -65,7 +66,7 @@ private:
 	}
 
 	TransitionRepository<Real_t> convert_skeleton_to_transition_repository(const std::vector<std::pair<State, Real_t>> &skeleton, const Real_t t_max) const {
-		OccupationTimes<Real_t> occupation_times extract_occupation_times(skeleton, t_max);
+		OccupationTimes<Real_t> occupation_times = extract_occupation_times(skeleton, t_max);
 		std::vector<NodeTransitions<Real_t>> node_transitions;
 		for (size_t i = 0; i < preferences.size(); i++) {
 			node_transitions.push_back(NodeTransitions<Real_t>(i));
@@ -74,10 +75,10 @@ private:
 			auto transition = Transition::create_from_states(skeleton[i - 1].first, skeleton[i].first);
 			node_transitions[transition.get_changing_node()].add(transition);
 		}
-		return TransitionRepository<Real_t>(occupation_times, node_transitions);
+		return TransitionRepository<Real_t>{node_transitions, occupation_times, preferences.size()};
 	}
 
-	std::vector<std::vector<bool>> generate_dependence_structure() {
+	std::vector<std::vector<bool>> generate_dependence_structure() const {
 		std::vector<std::vector<bool>> dependence{ preferences.size() };
 		for (auto &vec : dependence) {
 			for (size_t i = 0; i < preferences.size(); i++) {
@@ -105,14 +106,14 @@ private:
 	}
 public:
 	ListModel<Real_t>(size_t number_of_nodes, long seed): 
-		generator{ seed },
-		preferences {number_of_nodes} {
+		generator{ seed } {
+		preferences.resize(number_of_nodes);
 		for (size_t i = 0; i < number_of_nodes; i++) {
 			preferences[i] = random_bit();
 		}
 	}
 
-	ModelData<Real_t> sample_chain(Real_t t_max) const {
+	ModelData<Real_t> sample_chain(Real_t t_max) {
 		auto starting_state = simulate_starting_state();
 		auto skeleton = simulate(t_max, starting_state);
 		auto transitions = convert_skeleton_to_transition_repository(skeleton, t_max);

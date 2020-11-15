@@ -14,13 +14,13 @@ public:
 	}
 
 	void add(const Transition &transition) {
-		if (transition_counts.find(transition) == transition.end()) {
+		if (transition_counts.find(transition) == transition_counts.end()) {
 			transition_counts[transition] = 0.0;
 		}
 		transition_counts[transition] += 1.0;
 	}
 
-	const std::unordered_map<Transition, Real_t> &get_transition_counts() const {
+	const std::unordered_map<Transition, Real_t, TransitionHash> &get_transition_counts() const {
 		return this->transition_counts;
 	}
 

@@ -13,6 +13,11 @@ private:
 	const size_t number_of_nodes;
 
 public:
+	TransitionRepository<Real_t>(std::vector<NodeTransitions<Real_t>> nt, OccupationTimes<Real_t> ot, size_t nn):
+		node_transitions{nt},
+		occupation_times{ot},
+		number_of_nodes{nn} {}
+
 	const NodeTransitions<Real_t> &fetch_node_transitions(size_t node) const {
 		return node_transitions[node];
 	}

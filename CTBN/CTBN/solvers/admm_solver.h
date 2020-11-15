@@ -1,12 +1,15 @@
 #ifndef ADMM_SOLVER_H
 #define ADMM_SOLVER_H
+#include <vector>
+#include <tuple>
 
 #include "../likelihood_calculator/likelihood_calculator.h"
 #include "../bob_dylan.h"
 
 template <class Real_t> class ADMMSolver {
+public:
+	const LikelihoodCalculator<Real_t> likelihood_calculator;
 private:
-	LikelihoodCalculator<Real_t> likelihood_calculator;
 	const Real_t RO = 1.0;
 	const size_t L2_ITERATIONS = 100;
 	const Real_t L2_STEP_SIZE = 0.1;
@@ -42,7 +45,7 @@ private:
 		}
 	}
 
-	Real_t get_non_zero_vector_elements(const std::vector<Real_t> &v) {
+	Real_t get_non_zero_vector_elements(const std::vector<Real_t> &v) const {
 		Real_t result = 0.0;
 		for (auto element : v) {
 			if (element > EPSILON || element < -EPSILON) {
@@ -52,28 +55,31 @@ private:
 		return result;
 	}
 
-	std::vector<Real_t> get_starting_x(const size_t vector_size) {
+	std::vector<Real_t> get_starting_x(const size_t vector_size) const {
 		std::vector<Real_t> result;
 		for (size_t i = 0; i < vector_size; i++) {
 			result.push_back(1.0);
 		}
+		return result;
 	}
 
-	std::vector<Real_t> get_starting_z(const size_t vector_size) {
+	std::vector<Real_t> get_starting_z(const size_t vector_size) const {
 		std::vector<Real_t> result;
 		for (size_t i = 0; i < vector_size; i++) {
 			result.push_back(1.0);
 		}
+		return result;
 	}
 
-	std::vector<Real_t> get_starting_u(const size_t vector_size) {
+	std::vector<Real_t> get_starting_u(const size_t vector_size) const {
 		std::vector<Real_t> result;
 		for (size_t i = 0; i < vector_size; i++) {
 			result.push_back(1.0);
 		}
+		return result;
 	}
 public:
-	ADDMSolver<Real_t>(LikelihoodCalculator<Real_t> likelihood_calculator) :
+	ADMMSolver<Real_t>(LikelihoodCalculator<Real_t> likelihood_calculator) :
 		likelihood_calculator{ likelihood_calculator } {}
 	//TODO incijalizacja wektorow u z
 	// pierwszy element return to beta, drugi n * lik trzeci ||beta||
@@ -88,7 +94,5 @@ public:
 		}
 		return std::make_tuple(x, likelihood_calculator.calculate_likelihood(x, node, past_node_value), get_non_zero_vector_elements(x));
 	}
-
-	friend class BobDylan<Real_t>;
 };
 #endif // !ADMM_SOLVER_H

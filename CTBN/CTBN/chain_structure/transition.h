@@ -9,10 +9,16 @@ private:
 	bool new_node_state;
 
 public:
+	Transition(State state, size_t cn, bool nv):
+		state{ state },
+		changing_node{ cn },
+		new_node_state{ nv } {
+
+	}
 	bool operator==(const Transition &other) const
 	{
-		return this->state == other->state 
-			&& this->changing_node == other->changing_node
+		return this->state == other.state 
+			&& this->changing_node == other.changing_node
 			&& this->new_node_state == other.new_node_state;
 	}
 
@@ -32,7 +38,7 @@ public:
 				break;
 			}
 		}
-		return Transition(old_state, changing_node, new_state.get_node_value(changing_node));
+		return Transition{ old_state, changing_node, new_state.get_node_value(changing_node) };
 	}
 
 	friend class TransitionHash;
@@ -40,9 +46,9 @@ public:
 
 class TransitionHash {
 public:
-	size_t operator()(const TransitionHash& s) const
+	size_t operator()(const Transition& s) const
 	{
-		return (std::hash<std::vector<bool>>()(s->state()) + s.changing_node);
+		return (std::hash<std::vector<bool>>()(s.state.get_data()) + s.changing_node);
 	}
 };
 

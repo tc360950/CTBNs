@@ -18,7 +18,7 @@ public:
 	}
 
 	Real_t get_occupation_time(const State &state) const {
-		return total_occupation_time[state];
+		return total_occupation_time.at(state);
 	}
 };
 #endif // !OCCUPATION_TIMES_H

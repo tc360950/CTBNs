@@ -1,6 +1,7 @@
 #ifndef BOB_DYLAN_H
 #define BOB_DYLAN_H
 #include <thread>
+#include <tuple>
 
 #include "solvers/admm_solver.h"
 #include "models/model_data.h"
@@ -19,9 +20,16 @@ private:
 		std::vector<Real_t> beta;
 		size_t node;
 		size_t node_past_value;
+		Result(std::vector<Real_t> b, size_t n, size_t nv):
+			beta{b},
+			node{ n },
+			node_past_value{ nv } {
+
+		}
+		Result(){}
 	};
 
-	Real_t prune(const std::vector<Real_t> &vector, const Real_t delta, std::vector<Real_t> &result_place_holder) {
+	Real_t prune(const std::vector<Real_t> &vector, const Real_t delta, std::vector<Real_t> &result_place_holder) const {
 		Real_t non_zero_entries = 0.0;
 		for (size_t i = 0; i < vector.size(); i++) {
 			if (vector[i] >= delta || vector[i] <= -delta) {
@@ -35,13 +43,13 @@ private:
 		return non_zero_entries;
 	}
 
-	Result solve(const Real_t number_of_nodes, const ADMMSolver<Real_t> &solver, const Real_t number_of_jumps, const std::vector<Real_t> &starting_beta, const size_t node, const bool past_node_value) const {
+	Result solve(const Real_t number_of_nodes, const ADMMSolver<Real_t> &solver, const Real_t number_of_jumps, const size_t node, const bool past_node_value) const {
 		std::vector<Real_t> best_so_far;
 		Real_t best_so_far_score = 0.0;
 		bool best_set = false;
 		Real_t lambda = MAX_LAMBDA;
 		for (size_t i = 0; i < LAMBDA_COUNT; i++) {
-			auto result = solver.solve(SOLVER_ITERATIONS, starting_beta, node, past_node_value, lambda);
+			auto result = solver.solve(SOLVER_ITERATIONS, node, past_node_value, lambda);
 			Real_t score = number_of_jumps * std::get<1>(result) + std::log(number_of_jumps) * std::get<2>(result);
 			if (!best_set || score < best_so_far_score) {
 				best_set = true;
@@ -65,21 +73,21 @@ private:
 				best_prunned_so_far = prunning_place_holder;
 			}
 		}
-		return Result(best_prunned_so_far, node, past_node_value);
+		return Result{ best_prunned_so_far, node, past_node_value };
 	}
 	//solver, number of jumps, dependence matrix
-	std::pair<ADMMSolver<Real_t>, ModelData<Real_t>> sample_chain(const size_t node_count, const long seed, const Real_t t_max) {
+	std::pair<ADMMSolver<Real_t>, ModelData<Real_t>> sample_chain(const size_t node_count, const long seed, const Real_t t_max) const {
 		Model model{ node_count, seed };
 		auto model_data = model.sample_chain(t_max);
 		LikelihoodCalculator<Real_t> calculator{model_data.transition_repository, false};
 		return std::make_pair(ADMMSolver<Real_t>(calculator), model_data);
 	}
 public:
+	BobDylan<Real_t, Model>(){}
 
-
-	void simulate(const size_t node_count, const long seed) {
+	void simulate(const size_t node_count, const long seed, const Real_t t_max) {
 		std::vector<Result> inference_result(2 * node_count);
-		auto chain = sample_chain(node_count, seed);
+		auto chain = sample_chain(node_count, seed, t_max);
 		std::vector<std::thread> threads;
 		const size_t data_per_thread = 2 * node_count / NUM_THREADS;
 		for (int th = 0; th < NUM_THREADS; th++) {

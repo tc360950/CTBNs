@@ -13,16 +13,19 @@ public:
 
 	State(const State &s2) { this->state = s2.state; }
 
+	const std::vector<bool> &get_data() const {
+		return state;
+	}
 	bool operator==(const State &other) const
 	{
-		return this->state == other->state;
+		return this->state == other.state;
 	}
 
 	void flip_node_value(size_t node) {
 		state[node] = !state[node];
 	}
 
-	inline size_t get_size() {
+	inline size_t get_size() const {
 		return state.size();
 	}
 
@@ -37,7 +40,7 @@ class StateHash {
 public:
 	size_t operator()(const State& s) const
 	{
-		return (std::hash<std::vector<bool>>()(s->state));
+		return (std::hash<std::vector<bool>>()(s.state));
 	}
 };
 
