@@ -7,26 +7,22 @@
 
 template <class Real_t> class TransitionRepository {
 private:
-	//pod indeksem i tranzycje i-tego wierzchola
+	//pod indeksem i tranzycje i/2-tego wierzchola ze stanu i % 2
 	std::vector<NodeTransitions<Real_t>> node_transitions;
-	OccupationTimes<Real_t> occupation_times;
 	const size_t number_of_nodes;
+	const size_t parameters_size;
 
 public:
-	TransitionRepository<Real_t>(std::vector<NodeTransitions<Real_t>> nt, OccupationTimes<Real_t> ot, size_t nn):
+	TransitionRepository<Real_t>(std::vector<NodeTransitions<Real_t>> nt, size_t nn, size_t ps):
 		node_transitions{nt},
-		occupation_times{ot},
-		number_of_nodes{nn} {}
+		number_of_nodes{nn},
+		parameters_size{ ps }{}
 
-	const NodeTransitions<Real_t> &fetch_node_transitions(size_t node) const {
-		return node_transitions[node];
+	const NodeTransitions<Real_t> &fetch_node_transitions(size_t node, size_t past_node_value) const {
+		return node_transitions[2*node + past_node_value];
 	}
-
-	Real_t get_occupation_time(const State &state) const {
-		return occupation_times.get_occupation_time(state);
-	}
-	size_t get_number_of_nodes() const {
-		return this->number_of_nodes;
+	const size_t get_parameters_size() const {
+		return parameters_size;
 	}
 };
 

@@ -8,25 +8,6 @@
 template <class Real_t> class LikelihoodCalculator {
 private:
 	TransitionRepository<Real_t> transition_repository;
-	std::vector<std::unordered_map<State, std::vector<Real_t>, StateHash>> predictive_vectors_cache;
-	const bool ADD_INTERACTIONS;
-
-	const std::vector<Real_t> &convert_to_predictive_vector(const State &state, size_t node) {
-		if (!ADD_INTERACTIONS) {
-			if (predictive_vectors_cache[node].find(state) != predictive_vectors_cache[node].end()) {
-				return predictive_vectors_cache[node][state];
-			}
-			std::vector<Real_t> result;
-			for (size_t i = 0; i < node; i++) {
-				result.push_back(state.get_node_value(i));
-			}
-			for (size_t i = node; i < state.get_size() - 1; i++) {
-				result.push_back(state.get_node_value(i + 1));
-			}
-			predictive_vectors_cache[node][state] = result;
-			return predictive_vectors_cache[node][state];
-		}
-	}
 
 	Real_t get_intensity(const std::vector<Real_t> &beta, const std::vector<Real_t> &predictive) const {
 		Real_t result = 0;
@@ -38,42 +19,33 @@ private:
 
 public:
 	LikelihoodCalculator<Real_t>(TransitionRepository<Real_t> transition_repository, bool add_interactions) : 
-		transition_repository{ transition_repository },
-		ADD_INTERACTIONS{ add_interactions } {
-		predictive_vectors_cache.resize(transition_repository.get_number_of_nodes());
+		transition_repository{ transition_repository } {
 	}
 
 	size_t get_parameters_size() const {
-		if (!ADD_INTERACTIONS) {
-			return transition_repository.get_number_of_nodes() - 1;
-		}
+		return transition_repository.get_parameters_size();
 	}
 
 	Real_t calculate_likelihood(const std::vector<Real_t> &beta, size_t node, bool past_node_value) {
 		Real_t result = 0.0;
-		std::vector<Real_t> *predictive_vector;
-		for (auto &transition_count : transition_repository.fetch_node_transitions(node).get_transition_counts()) {
-			const State &state = transition_count.first.get_state();
-			if (state.get_node_value(node) == past_node_value) {
-				const std::vector<Real_t> &predictive_vector = convert_to_predictive_vector(state, node);
-				const Real_t intensity = get_intensity(beta, predictive_vector);
-				result += -transition_count.second * intensity + std::exp(intensity) * transition_repository.get_occupation_time(state);
-			}
+		const NodeTransitions<Real_t> &node_transitions = transition_repository.fetch_node_transitions(node, past_node_value);
+		for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
+			const Real_t intensity = get_intensity(beta, node_transitions.predictive_vectors[i]);
+			const Real_t multiplier = -node_transitions.state_counts[i] * intensity 
+				+ std::exp(intensity) * node_transitions.time_spent_in_state[i];
+			result += multiplier;
 		}
 		return result;
 	}
 
-	std::vector<Real_t> calculate_likelihood_gradient(const std::vector<Real_t> &beta, size_t node, bool past_node_value) {
+	std::vector<Real_t> calculate_likelihood_gradient(const std::vector<Real_t> &beta, size_t node, size_t past_node_value) {
 		std::vector<Real_t> result(beta.size());
-		for (auto &transition_count : transition_repository.fetch_node_transitions(node).get_transition_counts()) {
-			const State &state = transition_count.first.get_state();
-			if (state.get_node_value(node) == past_node_value) {
-				const std::vector<Real_t> &predictive_vector = convert_to_predictive_vector(state, node);
-				const Real_t intensity = get_intensity(beta, predictive_vector);
-				const Real_t multiplier = -transition_count.second + std::exp(intensity) * transition_repository.get_occupation_time(state);
-				for (size_t i = 0; i < predictive_vector.size(); i++) {
-						result[i] += predictive_vector[i] * multiplier;
-				}
+		const NodeTransitions<Real_t> &node_transitions = transition_repository.fetch_node_transitions(node, past_node_value);
+		for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
+			const Real_t intensity = get_intensity(beta, node_transitions.predictive_vectors[i]);
+			const Real_t multiplier = -node_transitions.state_counts[i] + std::exp(intensity) * node_transitions.time_spent_in_state[i];
+			for (size_t j = 0; j < node_transitions.predictive_vectors[i].size(); j++) {
+				result[j] += node_transitions.predictive_vectors[i][j] * multiplier;
 			}
 		}
 		return result;

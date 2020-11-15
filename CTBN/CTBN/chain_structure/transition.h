@@ -30,6 +30,10 @@ public:
 		return this->changing_node;
 	}
 
+	const size_t get_old_node_state() const {
+		return new_node_state ? 0 : 1;
+	}
+
 	static Transition create_from_states(const State &old_state, const State &new_state) {
 		size_t changing_node;
 		for (size_t i = 0; i < old_state.get_size(); i++) {

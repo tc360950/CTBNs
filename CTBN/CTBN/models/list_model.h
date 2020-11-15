@@ -3,6 +3,7 @@
 #include <random>
 #include <utility>
 #include <numeric>
+#include <unordered_map>
 
 #include "../chain_structure/transition_repository.h"
 #include "model_data.h"
@@ -65,17 +66,40 @@ private:
 		return occupation_times;
 	}
 
+	std::vector<Real_t> state_to_transition_vector(const State &state, const size_t node) const {
+		std::vector<Real_t> result;
+		result.resize(state.get_data().size() - 1);
+		for (size_t i = 0; i < node; i++) {
+			result[i] = state.get_data()[i];
+		}
+		for (size_t i = node; i < result.size(); i++) {
+			result[i] = state.get_data()[i + 1];
+		}
+		return result;
+	}
+
+	//TODO mozna zoptymalizowac przy pomocy move semantics, jezeli bedzie za wole
 	TransitionRepository<Real_t> convert_skeleton_to_transition_repository(const std::vector<std::pair<State, Real_t>> &skeleton, const Real_t t_max) const {
 		OccupationTimes<Real_t> occupation_times = extract_occupation_times(skeleton, t_max);
 		std::vector<NodeTransitions<Real_t>> node_transitions;
-		for (size_t i = 0; i < preferences.size(); i++) {
-			node_transitions.push_back(NodeTransitions<Real_t>(i));
+		for (size_t i = 0; i < 2 * preferences.size(); i++) {
+			node_transitions.push_back(NodeTransitions<Real_t>());
 		}
+		std::unordered_map<Transition, Real_t, TransitionHash> transition_to_count;
 		for (size_t i = 1; i < skeleton.size(); i++) {
 			auto transition = Transition::create_from_states(skeleton[i - 1].first, skeleton[i].first);
-			node_transitions[transition.get_changing_node()].add(transition);
+			if (transition_to_count.find(transition) == transition_to_count.end()) {
+				transition_to_count[transition] = 0.0;
+			}
+			transition_to_count[transition]++;
 		}
-		return TransitionRepository<Real_t>{node_transitions, occupation_times, preferences.size()};
+		for (auto &transition_count : transition_to_count) {
+			auto node = transition_count.first.get_changing_node();
+			auto old_node_state = transition_count.first.get_old_node_state();
+			node_transitions[2 * node + old_node_state].add(state_to_transition_vector(transition_count.first.get_state(), node), occupation_times.get_occupation_time(transition_count.first.get_state()), transition_count.second);
+		}
+
+		return TransitionRepository<Real_t>{node_transitions, preferences.size(), preferences.size() - 1};
 	}
 
 	std::vector<std::vector<bool>> generate_dependence_structure() const {

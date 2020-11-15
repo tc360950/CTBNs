@@ -1,27 +1,22 @@
 #ifndef NODE_TRANSITIONS_H
 #define NODE_TRANSITIONS_H
-#include <unordered_map>
+#include <vector>
 
 #include "transition.h"
 
 template<class Real_t> class NodeTransitions {
-private:
-	std::unordered_map<Transition, Real_t, TransitionHash> transition_counts;
-	size_t node;
-
 public:
-	NodeTransitions<Real_t>(size_t node) : node{ node } {
+	std::vector<Real_t> state_counts;
+	std::vector<Real_t> time_spent_in_state;
+	std::vector<std::vector<Real_t>> predictive_vectors;
+
+	NodeTransitions<Real_t>() {
 	}
 
-	void add(const Transition &transition) {
-		if (transition_counts.find(transition) == transition_counts.end()) {
-			transition_counts[transition] = 0.0;
-		}
-		transition_counts[transition] += 1.0;
-	}
-
-	const std::unordered_map<Transition, Real_t, TransitionHash> &get_transition_counts() const {
-		return this->transition_counts;
+	void add(const std::vector<Real_t> &predictive, const Real_t time, const Real_t count) {
+		state_counts.push_back(count);
+		time_spent_in_state.push_back(time);
+		predictive_vectors.push_back(predictive);
 	}
 
 };
