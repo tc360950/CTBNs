@@ -6,7 +6,7 @@
 template <class Real_t> class LikelihoodCalculator {
 private:
 	TransitionRepository<Real_t> transition_repository;
-	const boolean ADD_INTERACTIONS;
+	const bool ADD_INTERACTIONS;
 
 	void convert_to_predictive_vector(const State &state, size_t node, std::vector<bool> &result_placeholder) {
 		if (!ADD_INTERACTIONS) {
@@ -30,10 +30,16 @@ private:
 	}
 
 public:
-	LikelihoodCalculator<Real_t>(TransitionRepository<Real_t> transition_repository, boolean add_interactions) : 
+	LikelihoodCalculator<Real_t>(TransitionRepository<Real_t> transition_repository, bool add_interactions) : 
 		transition_repository{ transition_repository },
 		ADD_INTERACTIONS{ add_interactions } {
 
+	}
+
+	size_t get_parameters_size() const {
+		if (!ADD_INTERACTIONS) {
+			return transition_repository.get_number_of_nodes() - 1;
+		}
 	}
 
 	Real_t calculate_likelihood(const std::vector<Real_t> &beta, size_t node, bool past_node_value) const {

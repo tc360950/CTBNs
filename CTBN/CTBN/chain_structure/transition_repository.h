@@ -10,6 +10,7 @@ private:
 	//pod indeksem i tranzycje i-tego wierzchola
 	std::vector<NodeTransitions<Real_t>> node_transitions;
 	OccupationTimes<Real_t> occupation_times;
+	const size_t number_of_nodes;
 
 public:
 	const NodeTransitions<Real_t> &fetch_node_transitions(size_t node) const {
@@ -18,6 +19,9 @@ public:
 
 	Real_t get_occupation_time(const State &state) const {
 		return occupation_times.get_occupation_time(state);
+	}
+	size_t get_number_of_nodes() const {
+		return this->number_of_nodes;
 	}
 };
 

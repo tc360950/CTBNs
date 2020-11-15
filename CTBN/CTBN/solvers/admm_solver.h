@@ -51,15 +51,36 @@ private:
 		}
 		return result;
 	}
+
+	std::vector<Real_t> get_starting_x(const size_t vector_size) {
+		std::vector<Real_t> result;
+		for (size_t i = 0; i < vector_size; i++) {
+			result.push_back(1.0);
+		}
+	}
+
+	std::vector<Real_t> get_starting_z(const size_t vector_size) {
+		std::vector<Real_t> result;
+		for (size_t i = 0; i < vector_size; i++) {
+			result.push_back(1.0);
+		}
+	}
+
+	std::vector<Real_t> get_starting_u(const size_t vector_size) {
+		std::vector<Real_t> result;
+		for (size_t i = 0; i < vector_size; i++) {
+			result.push_back(1.0);
+		}
+	}
 public:
 	ADDMSolver<Real_t>(LikelihoodCalculator<Real_t> likelihood_calculator) :
 		likelihood_calculator{ likelihood_calculator } {}
 	//TODO incijalizacja wektorow u z
 	// pierwszy element return to beta, drugi n * lik trzeci ||beta||
-	std::tuple<std::vector<Real_t>, Real_t, Real_t> solve(const size_t iterations, const std::vector<Real_t> &starting_beta, const size_t node, const bool past_node_value, const Real_t lambda) const {
-		std::vector<Real_t> x(starting_beta.begin(), starting_beta.end());
-		std::vector<Real_t> z;
-		std::vector<Real_t> u;
+	std::tuple<std::vector<Real_t>, Real_t, Real_t> solve(const size_t iterations, const size_t node, const bool past_node_value, const Real_t lambda) const {
+		std::vector<Real_t> x = get_starting_x(likelihood_calculator.get_parameters_size());
+		std::vector<Real_t> z = get_starting_z(likelihood_calculator.get_parameters_size());
+		std::vector<Real_t> u = get_starting_u(likelihood_calculator.get_parameters_size());
 		for (size_t i = 0; i < iterations; i++) {
 			update_x(u, z, x, node, past_node_value);
 			update_z(u, x, z, lambda);

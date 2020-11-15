@@ -4,6 +4,7 @@
 #include <pair>
 
 #include "../chain_structure/transition_repository.h"
+#include "model_data.h"
 
 template <class Real_t> class CorrelatedModel {
 private:
@@ -81,14 +82,40 @@ private:
 		return TransitionRepository<Real_t>(occupation_times, node_transitions);
 	}
 
+	std::vector<std::vector<bool>> generate_dependence_structure() {
+		std::vector<std::vector<bool>> dependence{ preferences.size() };
+		for (auto &vec : dependence) {
+			for (size_t i = 0; i < preferences.size(); i++) {
+				vec.push_back(false);
+			}
+		}
+		for (size_t i = 0; i < parents.size(); i++) {
+			dependence[parents.first][i] = true;
+			dependence[parents.second][i] = true;
+		}
+		return dependence;
+	}
+
+	State simulate_starting_state() {
+		std::vector<bool> state;
+		for (size_t i = 0; i < preferences.size(); i++) {
+			state.push_back(random_bit());
+		}
+		return State(state);
+	}
+
+	bool random_bit() {
+		std::uniform_int_distribution<int> distrib(0, 1);
+		auto bit = distrib(generator);
+		return  bit == 1 ? true : false;
+	}
+
 public:
 	CorrelatedModel<Real_t>(size_t number_of_nodes, long seed) :
 		generator{ seed },
 		preferences{ number_of_nodes } {
-		std::uniform_int_distribution<int> distrib(0, 1);
 		for (size_t i = 0; i < number_of_nodes; i++) {
-			auto bit = distrib(generator);
-			preferences[i] = bit == 1 ? true : false;
+			preferences[i] = random_bit();
 		}
 		std::uniform_int_distribution<size_t> distribution(0, 4);
 		for (size_t i = 0; i < 5; i++) {
@@ -102,10 +129,12 @@ public:
 		}
 	}
 
-	//number of jumps is returned 
-	std::pair<TransitionRepository<Real_t>, Real_t> sample_chain(Real_t t_max, const State &starting_state) const {
+	ModelData<Real_t> sample_chain(Real_t t_max) const {
+		auto starting_state = simulate_starting_state();
 		auto skeleton = simulate(t_max, starting_state);
-		return convert_skeleton_to_transition_repository(skeleton, t_max);
+		auto transitions = convert_skeleton_to_transition_repository(skeleton, t_max);
+		auto dependence_structure = generate_dependence_structure();
+		return ModelData<Real_t>(transitions, skeleton.size(), dependence_structure);
 	}
 };
 #endif // !CORRELATED_MODEL_H

@@ -3,6 +3,8 @@
 #include <thread>
 
 #include "solvers/admm_solver.h"
+#include "models/model_data.h"
+
 template <class Real_t, class Model> class BobDylan {
 private:
 	const size_t NUM_THREADS = 1;
@@ -10,7 +12,7 @@ private:
 	const Real_t MAX_LAMBDA = 100000;
 	const size_t LAMBDA_COUNT = 10;
 	//TODO fill it
-	const std::vector<Real_t> DELTA_SEQUENCE;
+	const std::vector<Real_t> DELTA_SEQUENCE{ 0.0001, 0.001, 0.01, 0.1, 1.0 };
 
 	class Result {
 	public:
@@ -65,9 +67,12 @@ private:
 		}
 		return Result(best_prunned_so_far, node, past_node_value);
 	}
-
-	std::pair<ADMMSolver<Real_t>, Real_t> sample_chain(const size_t node_count, const long seed) {
-
+	//solver, number of jumps, dependence matrix
+	std::pair<ADMMSolver<Real_t>, ModelData<Real_t>> sample_chain(const size_t node_count, const long seed, const Real_t t_max) {
+		Model model{ node_count, seed };
+		auto model_data = model.sample_chain(t_max);
+		LikelihoodCalculator<Real_t> calculator{model_data.transition_repository, false};
+		return std::make_pair(ADMMSolver<Real_t>(calculator), model_data);
 	}
 public:
 
@@ -83,8 +88,7 @@ public:
 				const size_t end = th + 1 == this->NUM_THREADS ? 2 * node_count : start + data_per_thread;
 				for (size_t i = start; i < end; i++) {
 					const bool node_value = i % 2 == 1;
-					//todo starting beta
-					auto result = this->solve(node_count, chain.first, chain.second, starting_beta, i / 2, node_value);
+					auto result = this->solve(node_count, chain.first, chain.second.number_of_jumps, i / 2, node_value);
 					inference_result[i] = result;
 				}
 			});
