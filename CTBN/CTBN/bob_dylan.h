@@ -10,7 +10,7 @@
 template <class Real_t, class Model> class BobDylan {
 private:
 	const size_t NUM_THREADS = 1;
-	const size_t SOLVER_ITERATIONS = 10;
+	const size_t SOLVER_ITERATIONS = 1000;
 	const Real_t MAX_LAMBDA = 100000;
 	const size_t LAMBDA_COUNT = 10;
 	//TODO fill it

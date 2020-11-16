@@ -26,7 +26,9 @@ int main()
 	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << "[µs]" << std::endl;
 	StatisticsFactory<double, ListModel<double>> factory;
 	auto stats = factory.convert(20, 50, result.model_data, result);
-
+    std::cout << stats.power << "\n";
+    std::cout << stats.FDR << "\n";
+    std::cout << stats.MD << "\n";
 	while (true) {}
 	return 0;
 }
