@@ -58,7 +58,7 @@ private:
 	std::vector<Real_t> get_starting_x(const size_t vector_size) {
 		std::vector<Real_t> result;
 		for (size_t i = 0; i < vector_size; i++) {
-			result.push_back(1.0);
+			result.push_back(.01);
 		}
 		return result;
 	}
@@ -66,7 +66,7 @@ private:
 	std::vector<Real_t> get_starting_z(const size_t vector_size) {
 		std::vector<Real_t> result;
 		for (size_t i = 0; i < vector_size; i++) {
-			result.push_back(1.0);
+			result.push_back(.01);
 		}
 		return result;
 	}
@@ -74,7 +74,15 @@ private:
 	std::vector<Real_t> get_starting_u(const size_t vector_size) {
 		std::vector<Real_t> result;
 		for (size_t i = 0; i < vector_size; i++) {
-			result.push_back(1.0);
+			result.push_back(.01);
+		}
+		return result;
+	}
+
+	Real_t get_vector_penalty(const std::vector<Real_t> &vec) {
+		Real_t result = 0.0;
+		for (size_t i = 0; i < vec.size(); i++) {
+			result += std::abs(vec[i]);
 		}
 		return result;
 	}
@@ -93,6 +101,7 @@ public:
 			update_x(u, z, x, node, past_node_value, gradient_holder);
 			update_z(u, x, z, lambda);
 			update_u(z, x, u);
+			//std::cout << "Score: " << get_vector_penalty(x) * lambda + likelihood_calculator.calculate_likelihood(x, node, past_node_value) << "\n";
 		}
 		return std::make_tuple(x, likelihood_calculator.calculate_likelihood(x, node, past_node_value), get_non_zero_vector_elements(x));
 	}

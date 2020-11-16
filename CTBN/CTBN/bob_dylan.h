@@ -11,7 +11,7 @@ template <class Real_t, class Model> class BobDylan {
 private:
 	const size_t NUM_THREADS = 1;
 	const size_t SOLVER_ITERATIONS = 1000;
-	const Real_t MAX_LAMBDA = 100000;
+	const Real_t MAX_LAMBDA = 1.0;
 	const size_t LAMBDA_COUNT = 10;
 	//TODO fill it
 	const std::vector<Real_t> DELTA_SEQUENCE{ 0.0001, 0.001, 0.01, 0.1, 1.0 };
@@ -66,7 +66,7 @@ private:
 	std::pair<ADMMSolver<Real_t>, ModelData<Real_t>> sample_chain(const size_t node_count, const long seed, const Real_t t_max) const {
 		Model model{ node_count, seed };
 		auto model_data = model.sample_chain(t_max);
-		LikelihoodCalculator<Real_t> calculator{model_data.transition_repository, false};
+		LikelihoodCalculator<Real_t> calculator{model_data.transition_repository, t_max};
 		return std::make_pair(ADMMSolver<Real_t>(calculator), model_data);
 	}
 public:

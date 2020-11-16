@@ -35,7 +35,7 @@ public:
 		for (size_t i = 0; i < time_spent_in_state.size(); i++) {
 			for (size_t j = 0; j < parameters_size; j++) {
 				predictive_vectors_times_occupation[start + j] = predictive_vectors[start + j] * time_spent_in_state[i];
-				sum_counts_times_predictive[j] += state_counts[i] * predictive_vectors[start + j];
+				sum_counts_times_predictive[j] -= state_counts[i] * predictive_vectors[start + j];
 			}
 			start += parameters_size;
 		}
