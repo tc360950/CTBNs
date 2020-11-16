@@ -14,12 +14,12 @@ private:
 	const size_t L2_ITERATIONS = 100;
 	const Real_t L2_STEP_SIZE = 0.1;
 	const Real_t EPSILON = 0.000000001;
-	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const bool past_node_value) {
+	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const bool past_node_value, std::vector<Real_t> &gradient_holder) {
 		for (size_t i = 0; i < L2_ITERATIONS; i++) {
-			auto gradient_1 = likelihood_calculator.calculate_likelihood_gradient(x, node, past_node_value);
-			for (size_t n = 0; n < gradient_1.size(); n++) {
-				gradient_1[n] += RO * (x[n] - (z[n] - u[n]));
-				x[n] -= L2_STEP_SIZE * gradient_1[n];
+			likelihood_calculator.calculate_likelihood_gradient(x, node, past_node_value, gradient_holder);
+			for (size_t n = 0; n < gradient_holder.size(); n++) {
+				gradient_holder[n] += RO * (x[n] - (z[n] - u[n]));
+				x[n] -= L2_STEP_SIZE * gradient_holder[n];
 			}
 		}
 	}
@@ -87,8 +87,10 @@ public:
 		std::vector<Real_t> x = get_starting_x(likelihood_calculator.get_parameters_size());
 		std::vector<Real_t> z = get_starting_z(likelihood_calculator.get_parameters_size());
 		std::vector<Real_t> u = get_starting_u(likelihood_calculator.get_parameters_size());
+		std::vector<Real_t> gradient_holder;
+		gradient_holder.resize(x.size());
 		for (size_t i = 0; i < iterations; i++) {
-			update_x(u, z, x, node, past_node_value);
+			update_x(u, z, x, node, past_node_value, gradient_holder);
 			update_z(u, x, z, lambda);
 			update_u(z, x, u);
 		}

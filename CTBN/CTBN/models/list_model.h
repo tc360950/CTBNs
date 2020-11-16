@@ -99,7 +99,9 @@ private:
 			auto old_node_state = transition_count.first.get_old_node_state();
 			node_transitions[2 * node + old_node_state].add(state_to_transition_vector(transition_count.first.get_state(), node), occupation_times.get_occupation_time(transition_count.first.get_state()), transition_count.second);
 		}
-
+		for (auto &nt : node_transitions) {
+			nt.end_add(preferences.size() - 1);
+		}
 		return TransitionRepository<Real_t>{node_transitions, preferences.size(), preferences.size() - 1};
 	}
 
