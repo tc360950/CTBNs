@@ -5,29 +5,16 @@
 
 #include "solvers/admm_solver.h"
 #include "models/model_data.h"
+#include "utils/result.h"
 
 template <class Real_t, class Model> class BobDylan {
 private:
 	const size_t NUM_THREADS = 1;
-	const size_t SOLVER_ITERATIONS = 20;
+	const size_t SOLVER_ITERATIONS = 10;
 	const Real_t MAX_LAMBDA = 100000;
 	const size_t LAMBDA_COUNT = 10;
 	//TODO fill it
 	const std::vector<Real_t> DELTA_SEQUENCE{ 0.0001, 0.001, 0.01, 0.1, 1.0 };
-
-	class Result {
-	public:
-		std::vector<Real_t> beta;
-		size_t node;
-		size_t node_past_value;
-		Result(std::vector<Real_t> b, size_t n, size_t nv):
-			beta{b},
-			node{ n },
-			node_past_value{ nv } {
-
-		}
-		Result(){}
-	};
 
 	Real_t prune(const std::vector<Real_t> &vector, const Real_t delta, std::vector<Real_t> &result_place_holder) const {
 		Real_t non_zero_entries = 0.0;
@@ -43,7 +30,7 @@ private:
 		return non_zero_entries;
 	}
 
-	Result solve(const Real_t number_of_nodes, ADMMSolver<Real_t> &solver, const Real_t number_of_jumps, const size_t node, const bool past_node_value) const {
+	Result<Real_t> solve(const Real_t number_of_nodes, ADMMSolver<Real_t> &solver, const Real_t number_of_jumps, const size_t node, const bool past_node_value) const {
 		std::vector<Real_t> best_so_far;
 		Real_t best_so_far_score = 0.0;
 		bool best_set = false;
@@ -73,7 +60,7 @@ private:
 				best_prunned_so_far = prunning_place_holder;
 			}
 		}
-		return Result{ best_prunned_so_far, node, past_node_value };
+		return Result<Real_t>{ best_prunned_so_far, node, past_node_value };
 	}
 	//solver, number of jumps, dependence matrix
 	std::pair<ADMMSolver<Real_t>, ModelData<Real_t>> sample_chain(const size_t node_count, const long seed, const Real_t t_max) const {
@@ -85,8 +72,8 @@ private:
 public:
 	BobDylan<Real_t, Model>(){}
 
-	void simulate(const size_t node_count, const long seed, const Real_t t_max) {
-		std::vector<Result> inference_result(2 * node_count);
+	SimulationResult<Real_t> simulate(const size_t node_count, const long seed, const Real_t t_max) {
+		std::vector<Result<Real_t>> inference_result(2 * node_count);
 		auto chain = sample_chain(node_count, seed, t_max);
 		std::vector<std::thread> threads;
 		const size_t data_per_thread = 2 * node_count / NUM_THREADS;
@@ -105,6 +92,7 @@ public:
 		{
 			th.join();
 		}
+		return SimulationResult<Real_t>{ inference_result, chain.second };
 	}
 
 };

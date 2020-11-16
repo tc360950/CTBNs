@@ -7,6 +7,7 @@
 #include "CTBN.h"
 #include "bob_dylan.h"
 #include "models/list_model.h"
+#include "summary_statistics/statistics_factory.h"
 using namespace std;
 std::mt19937 generator;
 bool random_bit() {
@@ -20,10 +21,12 @@ int main()
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	cout << "Witaj, CMake." << endl;
 	BobDylan<double, ListModel<double>> bob;
-	bob.simulate(20, 12314214, 50);
+	auto result = bob.simulate(20, 12314214, 50);
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << "[µs]" << std::endl;
-	
+	StatisticsFactory<double, ListModel<double>> factory;
+	auto stats = factory.convert(20, 50, result.model_data, result);
+
 	while (true) {}
 	return 0;
 }

@@ -33,3 +33,5 @@
 
 #VS data 
 CTBN/.vs/
+*.psess
+*.vspx
