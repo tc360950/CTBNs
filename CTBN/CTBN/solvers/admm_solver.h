@@ -122,6 +122,11 @@ public:
 		std::vector<Real_t> u = get_starting_u(likelihood_calculator.get_parameters_size());
 		std::vector<Real_t> gradient_holder;
 		gradient_holder.resize(x.size());
+        if (DEBUG) {
+            log("Starting ADMM");
+            log("Score: ", get_vector_penalty(z) * lambda + likelihood_calculator.calculate_likelihood(z, node, past_node_value));
+            log("Penalty: ", get_vector_penalty(z) * lambda, " Likelihood: ", likelihood_calculator.calculate_likelihood(z, node, past_node_value));
+        }
 		bool stop = false;
 		size_t counter = 0;
 		while (!stop) {
@@ -143,6 +148,8 @@ public:
 			log("Stopped ADMM after ", counter, " iterations");
             log("Finished optimization for node ", node, " past node value: ", (size_t) past_node_value, " with lambda ", lambda);
             log("Score: ", get_vector_penalty(z) * lambda + likelihood_calculator.calculate_likelihood(z, node, past_node_value));
+            log("Penalty: ", get_vector_penalty(z) * lambda, " Likelihood: ", likelihood_calculator.calculate_likelihood(z, node, past_node_value));
+            log("Non zero vector elements: ", get_non_zero_vector_elements(z));
         }
 		return std::make_tuple(z, likelihood_calculator.calculate_likelihood(z, node, past_node_value), get_non_zero_vector_elements(z));
 	}

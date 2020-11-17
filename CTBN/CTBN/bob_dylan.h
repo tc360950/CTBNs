@@ -10,7 +10,7 @@
 template <class Real_t, class Model> class BobDylan {
 private:
 	const size_t NUM_THREADS = 1;
-	const size_t SOLVER_ITERATIONS = 1000;
+	const size_t SOLVER_ITERATIONS = 10;
 	const Real_t MAX_LAMBDA = 100000.0;
 	const size_t LAMBDA_COUNT = 10;
 	//TODO fill it
@@ -45,21 +45,39 @@ private:
 			}
 			lambda = lambda * 0.1;
 		}
-		//Choose best delta 
+		if (DEBUG) {
+            log("Choosing best delta for node, value pair: ", node, " ", past_node_value);
+            log("Chosen vector: "); 
+            std::string vector;
+            for (auto v : best_so_far) {
+                vector.append(std::to_string(v));
+                vector.append(" ");
+            }
+            log(vector);
+        } 
 
 		std::vector<Real_t> prunning_place_holder = best_so_far;
 		best_set = false;
 		std::vector<Real_t> best_prunned_so_far;
+        Real_t best_delta;
 		for (auto delta : DELTA_SEQUENCE) {
 			Real_t non_zero_entries = prune(best_so_far, delta, prunning_place_holder);
 			Real_t score = number_of_jumps * solver.likelihood_calculator.calculate_likelihood(prunning_place_holder, node, past_node_value);
 			score += std::log(2 * number_of_nodes * (number_of_nodes - 1)) * non_zero_entries;
+            if (DEBUG) {
+                log("Delta : ", delta, " total score: ", score, " number fo jumps: ", number_of_jumps);
+                log("Likelihood: ",  solver.likelihood_calculator.calculate_likelihood(prunning_place_holder, node, past_node_value), " non_zero_entries ", non_zero_entries);
+            }
 			if (!best_set || score < best_so_far_score) {
 				best_set = true;
 				best_so_far_score = score;
 				best_prunned_so_far = prunning_place_holder;
+                best_delta = delta;
 			}
 		}
+        if (DEBUG) {
+            log("Best delta: ", best_delta);
+        }
 		return Result<Real_t>{ best_prunned_so_far, node, past_node_value };
 	}
 	//solver, number of jumps, dependence matrix
