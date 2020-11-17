@@ -10,6 +10,15 @@ private:
 public:
 	OccupationTimes<Real_t>() {}
 
+	std::vector<State> get_states() const {
+		std::vector<State> keys;
+		keys.reserve(total_occupation_time.size());
+		for (auto kv : total_occupation_time) {
+			keys.push_back(kv.first);
+		}
+		return keys;
+	}
+
 	void add(const State &state, Real_t time) {
 		if (total_occupation_time.find(state) == total_occupation_time.end()) {
 			total_occupation_time[state] = 0.0;

@@ -53,7 +53,7 @@ private:
 		for (auto delta : DELTA_SEQUENCE) {
 			Real_t non_zero_entries = prune(best_so_far, delta, prunning_place_holder);
 			Real_t score = number_of_jumps * solver.likelihood_calculator.calculate_likelihood(prunning_place_holder, node, past_node_value);
-			score += std::log(2 * number_of_nodes / (number_of_nodes - 1)) * non_zero_entries;
+			score += std::log(2 * number_of_nodes * (number_of_nodes - 1)) * non_zero_entries;
 			if (!best_set || score < best_so_far_score) {
 				best_set = true;
 				best_so_far_score = score;

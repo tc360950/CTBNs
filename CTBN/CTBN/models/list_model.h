@@ -4,6 +4,7 @@
 #include <utility>
 #include <numeric>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "../chain_structure/transition_repository.h"
 #include "model_data.h"
@@ -67,7 +68,7 @@ private:
 		return occupation_times;
 	}
 
-	std::vector<Real_t> state_to_transition_vector(const State &state, const size_t node) const {
+	std::vector<Real_t> state_to_predictive_vector(const State &state, const size_t node) const {
 		std::vector<Real_t> result;
 		result.resize(state.get_data().size() - 1);
 		for (size_t i = 0; i < node; i++) {
@@ -79,26 +80,51 @@ private:
 		return result;
 	}
 
+	Real_t extract_transition_count(const State &state, std::unordered_map<State, std::unordered_set<Transition, TransitionHash>, StateHash> &state_to_transition,
+		std::unordered_map<Transition, Real_t, TransitionHash> &transition_to_count, const size_t node, const size_t node_past_value) const {
+		for (auto &transition : state_to_transition[state]) {
+			if (transition.get_changing_node() == node && transition.get_old_node_state() == node_past_value) {
+				return transition_to_count[transition];
+			}
+		}
+		return 0.0;
+	}
+
 	//TODO mozna zoptymalizowac przy pomocy move semantics, jezeli bedzie za wole
 	TransitionRepository<Real_t> convert_skeleton_to_transition_repository(const std::vector<std::pair<State, Real_t>> &skeleton, const Real_t t_max) const {
 		OccupationTimes<Real_t> occupation_times = extract_occupation_times(skeleton, t_max);
 		std::vector<NodeTransitions<Real_t>> node_transitions;
+		std::unordered_map<Transition, Real_t, TransitionHash> transition_to_count;
+		std::unordered_map<State, std::unordered_set<Transition, TransitionHash>, StateHash> state_to_transition;
+
 		for (size_t i = 0; i < 2 * preferences.size(); i++) {
 			node_transitions.push_back(NodeTransitions<Real_t>());
 		}
-		std::unordered_map<Transition, Real_t, TransitionHash> transition_to_count;
+		auto all_states = occupation_times.get_states();
+		for (auto state : all_states) {
+			state_to_transition[state] = std::unordered_set<Transition, TransitionHash>();
+		}
+
 		for (size_t i = 1; i < skeleton.size(); i++) {
 			auto transition = Transition::create_from_states(skeleton[i - 1].first, skeleton[i].first);
+			state_to_transition[skeleton[i - 1].first].insert(transition);
 			if (transition_to_count.find(transition) == transition_to_count.end()) {
 				transition_to_count[transition] = 0.0;
 			}
 			transition_to_count[transition]++;
 		}
-		for (auto &transition_count : transition_to_count) {
-			auto node = transition_count.first.get_changing_node();
-			auto old_node_state = transition_count.first.get_old_node_state();
-			node_transitions[2 * node + old_node_state].add(state_to_transition_vector(transition_count.first.get_state(), node), occupation_times.get_occupation_time(transition_count.first.get_state()), transition_count.second);
+
+		for (size_t i = 0; i < 2 * preferences.size(); i++) {
+			const size_t node = i / 2;
+			const size_t past_node_value = i % 2;
+			for (auto & state : all_states) {
+				auto time = occupation_times.get_occupation_time(state);
+				auto predictive_vector = state_to_predictive_vector(state, node);
+				auto transition_count = extract_transition_count(state, state_to_transition, transition_to_count, node, past_node_value);
+				node_transitions[2 * node + past_node_value].add(predictive_vector, time, transition_count);
+			}
 		}
+
 		for (auto &nt : node_transitions) {
 			nt.end_add(preferences.size() - 1);
 		}
