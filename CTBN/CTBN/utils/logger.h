@@ -7,7 +7,7 @@
 * Logging is by default directed to the standard output but its quite easy to modify this code and
 * redirect the output.
 */
-constexpr bool DEBUG = false;
+constexpr bool DEBUG = true;
 /**
 * Set this to <code>true</code> if integrity of data structures should be tested during sampling
 */

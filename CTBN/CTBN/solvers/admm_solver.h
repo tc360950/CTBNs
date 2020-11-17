@@ -5,6 +5,7 @@
 
 #include "../likelihood_calculator/likelihood_calculator.h"
 #include "../bob_dylan.h"
+#include "../utils/logger.h"
 
 template <class Real_t> class ADMMSolver {
 public:
@@ -14,6 +15,8 @@ private:
 	const size_t L2_ITERATIONS = 100;
 	const Real_t L2_STEP_SIZE = 0.1;
 	const Real_t EPSILON = 0.000000001;
+    const Real_t STOPPING_EPSILON = 0.0001;
+
 	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const bool past_node_value, std::vector<Real_t> &gradient_holder) {
 		for (size_t i = 0; i < L2_ITERATIONS; i++) {
 			likelihood_calculator.calculate_likelihood_gradient(x, node, past_node_value, gradient_holder);
@@ -86,6 +89,20 @@ private:
 		}
 		return result;
 	}
+    
+    Real_t get_vector_l2_norm(const std::vector<Real_t> &vec) const {
+        Real_t result = 0.0;
+		for (size_t i = 0; i < vec.size(); i++) {
+			result += vec[i] * vec[i];
+		}
+		return std::pow(result, 0.5);
+    }
+
+    bool stop(const std::vector<Real_t> &u, const std::vector<Real_t> &x, const std::vector<Real_t> &z) const {
+        Real_t e_primal = std::sqrt(x.size()) * STOPPING_EPSILON + STOPPING_EPSILON * std::max(get_vector_l2_norm(x), get_vector_l2_norm(z));
+        Real_t e_dual = std::sqrt(x.size()) * STOPPING_EPSILON + STOPPING_EPSILON * get_vector_l2_norm(y);
+        
+    }
 public:
 	ADMMSolver<Real_t>(LikelihoodCalculator<Real_t> likelihood_calculator) :
 		likelihood_calculator{ likelihood_calculator } {}
@@ -103,7 +120,11 @@ public:
 			update_u(z, x, u);
 			//std::cout << "Score: " << get_vector_penalty(x) * lambda + likelihood_calculator.calculate_likelihood(x, node, past_node_value) << "\n";
 		}
-		return std::make_tuple(x, likelihood_calculator.calculate_likelihood(x, node, past_node_value), get_non_zero_vector_elements(x));
+        if (DEBUG) {
+            log("Finished optimization for node ", node, " past node value: ", (size_t) past_node_value, " with lambda ", lambda);
+            log("Score: ", get_vector_penalty(z) * lambda + likelihood_calculator.calculate_likelihood(z, node, past_node_value));
+        }
+		return std::make_tuple(z, likelihood_calculator.calculate_likelihood(z, node, past_node_value), get_non_zero_vector_elements(z));
 	}
 };
 #endif // !ADMM_SOLVER_H

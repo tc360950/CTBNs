@@ -11,7 +11,7 @@ template <class Real_t, class Model> class BobDylan {
 private:
 	const size_t NUM_THREADS = 1;
 	const size_t SOLVER_ITERATIONS = 1000;
-	const Real_t MAX_LAMBDA = 1.0;
+	const Real_t MAX_LAMBDA = 100000.0;
 	const size_t LAMBDA_COUNT = 10;
 	//TODO fill it
 	const std::vector<Real_t> DELTA_SEQUENCE{ 0.0001, 0.001, 0.01, 0.1, 1.0 };
