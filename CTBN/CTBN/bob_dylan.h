@@ -15,8 +15,6 @@ private:
 	const Real_t MAX_LAMBDA = 100000.0;
 	const size_t LAMBDA_COUNT = 10;
 
-	std::vector<Real_t> delta_sequence;
-
 	Real_t prune(const std::vector<Real_t> &vector, const Real_t delta, std::vector<Real_t> &result_place_holder) const {
 		Real_t non_zero_entries = 0.0;
 		for (size_t i = 0; i < vector.size(); i++) {
@@ -56,7 +54,7 @@ private:
             }
             log(vector);
         } 
-		delta_sequence.clear();
+		std::vector<Real_t> delta_sequence;
 		for (auto el : best_so_far) {
 			delta_sequence.push_back(std::abs(el));
 		}
@@ -64,7 +62,7 @@ private:
 		best_set = false;
 		std::vector<Real_t> best_prunned_so_far;
         Real_t best_delta;
-		for (auto delta : DELTA_SEQUENCE) {
+		for (auto delta : delta_sequence) {
 			Real_t non_zero_entries = prune(best_so_far, delta, prunning_place_holder);
 			Real_t score = number_of_jumps * solver.likelihood_calculator.calculate_likelihood(prunning_place_holder, node, past_node_value);
 			score += std::log(2 * number_of_nodes * (number_of_nodes - 1)) * non_zero_entries;
