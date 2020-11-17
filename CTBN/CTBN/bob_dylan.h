@@ -2,6 +2,7 @@
 #define BOB_DYLAN_H
 #include <thread>
 #include <tuple>
+#include <string>
 
 #include "solvers/admm_solver.h"
 #include "models/model_data.h"

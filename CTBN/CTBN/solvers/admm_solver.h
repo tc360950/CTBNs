@@ -18,11 +18,16 @@ private:
     const Real_t STOPPING_EPSILON = 0.0001;
 
 	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const bool past_node_value, std::vector<Real_t> &gradient_holder) {
-		for (size_t i = 0; i < L2_ITERATIONS; i++) {
+		bool stop = false;
+		while (!stop) {
 			likelihood_calculator.calculate_likelihood_gradient(x, node, past_node_value, gradient_holder);
 			for (size_t n = 0; n < gradient_holder.size(); n++) {
 				gradient_holder[n] += RO * (x[n] - (z[n] - u[n]));
 				x[n] -= L2_STEP_SIZE * gradient_holder[n];
+			}
+			auto gradient_norm = get_vector_l2_norm(gradient_holder);
+			if (gradient_norm <= STOPPING_EPSILON) {
+				stop = true;
 			}
 		}
 	}
