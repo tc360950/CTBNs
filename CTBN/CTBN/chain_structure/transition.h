@@ -42,7 +42,7 @@ public:
 				break;
 			}
 		}
-		return Transition{ old_state, changing_node, new_state.get_node_value(changing_node) };
+		return Transition{ old_state, changing_node, (bool) new_state.get_node_value(changing_node) };
 	}
 
 	friend class TransitionHash;

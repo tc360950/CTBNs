@@ -70,12 +70,11 @@ private:
 
 	std::vector<Real_t> state_to_predictive_vector(const State &state, const size_t node) const {
 		std::vector<Real_t> result;
-		result.resize(state.get_data().size() - 1);
-		for (size_t i = 0; i < node; i++) {
-			result[i] = state.get_data()[i];
-		}
-		for (size_t i = node; i < result.size(); i++) {
-			result[i] = state.get_data()[i + 1];
+		result.push_back(1.0);
+		for (size_t i = 0; i < state.get_size(); i++) {
+			if (i != node) {
+				result.push_back(state.get_data()[i]);
+			}
 		}
 		return result;
 	}
@@ -128,9 +127,9 @@ private:
 		}
 
 		for (auto &nt : node_transitions) {
-			nt.end_add(preferences.size() - 1);
+			nt.end_add(preferences.size());
 		}
-		return TransitionRepository<Real_t>{node_transitions, preferences.size(), preferences.size() - 1};
+		return TransitionRepository<Real_t>{node_transitions, preferences.size(), preferences.size()};
 	}
 
 	std::vector<std::vector<bool>> generate_dependence_structure() const {
