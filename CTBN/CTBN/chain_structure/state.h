@@ -29,8 +29,8 @@ public:
 		return state.size();
 	}
 
-	inline bool get_node_value(size_t node) const {
-		return state[node];
+	inline size_t get_node_value(size_t node) const {
+		return state[node] ? 1 : 0;
 	}
 
 	friend class StateHash;

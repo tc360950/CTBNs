@@ -118,10 +118,12 @@ private:
 			const size_t node = i / 2;
 			const size_t past_node_value = i % 2;
 			for (auto & state : all_states) {
-				auto time = occupation_times.get_occupation_time(state);
-				auto predictive_vector = state_to_predictive_vector(state, node);
-				auto transition_count = extract_transition_count(state, state_to_transition, transition_to_count, node, past_node_value);
-				node_transitions[2 * node + past_node_value].add(predictive_vector, time, transition_count);
+				if (state.get_node_value(node) == past_node_value) {
+					auto time = occupation_times.get_occupation_time(state);
+					auto predictive_vector = state_to_predictive_vector(state, node);
+					auto transition_count = extract_transition_count(state, state_to_transition, transition_to_count, node, past_node_value);
+					node_transitions[2 * node + past_node_value].add(predictive_vector, time, transition_count);
+				}
 			}
 		}
 
