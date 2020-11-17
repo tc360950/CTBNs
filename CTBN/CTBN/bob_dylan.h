@@ -14,8 +14,8 @@ private:
 	const size_t SOLVER_ITERATIONS = 10;
 	const Real_t MAX_LAMBDA = 100000.0;
 	const size_t LAMBDA_COUNT = 10;
-	//TODO fill it
-	const std::vector<Real_t> DELTA_SEQUENCE{ 0.0001, 0.001, 0.01, 0.1, 1.0 };
+
+	std::vector<Real_t> delta_sequence;
 
 	Real_t prune(const std::vector<Real_t> &vector, const Real_t delta, std::vector<Real_t> &result_place_holder) const {
 		Real_t non_zero_entries = 0.0;
@@ -56,7 +56,10 @@ private:
             }
             log(vector);
         } 
-
+		delta_sequence.clear();
+		for (auto el : best_so_far) {
+			delta_sequence.push_back(std::abs(el));
+		}
 		std::vector<Real_t> prunning_place_holder = best_so_far;
 		best_set = false;
 		std::vector<Real_t> best_prunned_so_far;
