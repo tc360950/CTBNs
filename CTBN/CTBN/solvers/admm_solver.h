@@ -12,7 +12,7 @@ public:
 	LikelihoodCalculator<Real_t> likelihood_calculator;
 private:
 	const Real_t RO = 1.0;
-	const size_t L2_ITERATIONS = 100;
+	const size_t L2_ITERATIONS = 10;
 	const Real_t L2_STEP_SIZE = 0.1;
 	const Real_t EPSILON = 0.000000001;
     const Real_t STOPPING_EPSILON = 0.0001;
@@ -97,16 +97,24 @@ private:
 		}
 		return std::pow(result, 0.5);
     }
+	
+	Real_t difference_norm(const std::vector<Real_t> &vec1, const std::vector<Real_t> &vec2) const {
+		Real_t result = 0.0;
+		for (size_t i = 0; i < vec1.size(); i++) {
+			result += (vec1[i] - vec2[i]) * (vec1[i] - vec2[i]);
+		}
+		return std::pow(result, 0.5);
+	}
 
-    bool stop(const std::vector<Real_t> &u, const std::vector<Real_t> &x, const std::vector<Real_t> &z) const {
+    bool check_stop(const std::vector<Real_t> &u, const std::vector<Real_t> &x, const std::vector<Real_t> &z, const std::vector<Real_t> &old_u, 
+			const std::vector<Real_t> &old_z) const {
         Real_t e_primal = std::sqrt(x.size()) * STOPPING_EPSILON + STOPPING_EPSILON * std::max(get_vector_l2_norm(x), get_vector_l2_norm(z));
-        Real_t e_dual = std::sqrt(x.size()) * STOPPING_EPSILON + STOPPING_EPSILON * get_vector_l2_norm(y);
-        
+        Real_t e_dual = std::sqrt(x.size()) * STOPPING_EPSILON;
+		return e_primal >= difference_norm(u, old_u) && e_dual >= RO * difference_norm(z, old_z);
     }
 public:
 	ADMMSolver<Real_t>(LikelihoodCalculator<Real_t> likelihood_calculator) :
 		likelihood_calculator{ likelihood_calculator } {}
-	//TODO incijalizacja wektorow u z
 	// pierwszy element return to beta, drugi n * lik trzeci ||beta||
 	std::tuple<std::vector<Real_t>, Real_t, Real_t> solve(const size_t iterations, const size_t node, const bool past_node_value, const Real_t lambda) {
 		std::vector<Real_t> x = get_starting_x(likelihood_calculator.get_parameters_size());
@@ -114,13 +122,25 @@ public:
 		std::vector<Real_t> u = get_starting_u(likelihood_calculator.get_parameters_size());
 		std::vector<Real_t> gradient_holder;
 		gradient_holder.resize(x.size());
-		for (size_t i = 0; i < iterations; i++) {
+		bool stop = false;
+		size_t counter = 0;
+		while (!stop) {
+			for (size_t i = 0; i < iterations - 1; i++) {
+				update_x(u, z, x, node, past_node_value, gradient_holder);
+				update_z(u, x, z, lambda);
+				update_u(z, x, u);
+				counter++;
+			}
+			std::vector<Real_t> previous_u = u;
+			std::vector<Real_t> previous_z = z;
 			update_x(u, z, x, node, past_node_value, gradient_holder);
 			update_z(u, x, z, lambda);
 			update_u(z, x, u);
-			//std::cout << "Score: " << get_vector_penalty(x) * lambda + likelihood_calculator.calculate_likelihood(x, node, past_node_value) << "\n";
+			stop = check_stop(u, x, z, previous_u, previous_z);
+			counter++;
 		}
         if (DEBUG) {
+			log("Stopped ADMM after ", counter, " iterations");
             log("Finished optimization for node ", node, " past node value: ", (size_t) past_node_value, " with lambda ", lambda);
             log("Score: ", get_vector_penalty(z) * lambda + likelihood_calculator.calculate_likelihood(z, node, past_node_value));
         }
