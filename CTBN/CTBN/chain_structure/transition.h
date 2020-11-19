@@ -6,10 +6,10 @@ class Transition {
 private:
 	State state; 
 	size_t changing_node;
-	bool new_node_state;
+	size_t new_node_state;
 
 public:
-	Transition(State state, size_t cn, bool nv):
+	Transition(State state, size_t cn, size_t nv):
 		state{ state },
 		changing_node{ cn },
 		new_node_state{ nv } {
@@ -31,7 +31,7 @@ public:
 	}
 
 	const size_t get_old_node_state() const {
-		return new_node_state ? 0 : 1;
+		return state.get_node_value(changing_node);
 	}
 
 	static Transition create_from_states(const State &old_state, const State &new_state) {

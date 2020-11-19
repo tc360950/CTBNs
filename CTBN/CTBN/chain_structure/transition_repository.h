@@ -18,7 +18,7 @@ public:
 		number_of_nodes{nn},
 		parameters_size{ ps }{}
 
-	const NodeTransitions<Real_t> &fetch_node_transitions(size_t node, size_t past_node_value) const {
+	const NodeTransitions<Real_t> &fetch_node_transitions(const size_t node, const size_t past_node_value) const {
 		return node_transitions[2*node + past_node_value];
 	}
 	const size_t get_parameters_size() const {

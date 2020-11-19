@@ -8,23 +8,15 @@
 #include "bob_dylan.h"
 #include "models/list_model.h"
 #include "summary_statistics/statistics_factory.h"
-using namespace std;
-std::mt19937 generator;
-bool random_bit() {
-	std::uniform_int_distribution<int> distrib(0, 1);
-	auto bit = distrib(generator);
-	return  bit == 1 ? true : false;
-}
+#include "models/empty_model.h"
 int main()
 {	
-	
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-	cout << "Witaj, CMake." << endl;
-	BobDylan<double, ListModel<double>> bob;
+	BobDylan<double, EmptyModel<double>> bob;
 	auto result = bob.simulate(20, 12314214, 50);
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << "[µs]" << std::endl;
-	StatisticsFactory<double, ListModel<double>> factory;
+	StatisticsFactory<double, EmptyModel<double>> factory;
 	auto stats = factory.convert(20, 50, result.model_data, result);
     std::cout << stats.power << "\n";
     std::cout << stats.FDR << "\n";

@@ -37,6 +37,23 @@ private:
 			skeleton.push_back(std::make_pair(new_state, time));
 		}
 		skeleton.pop_back();
+		if (TEST) {
+			for (size_t i = 0; i < skeleton.size() - 1; i++) {
+				if (skeleton[i].second >= skeleton[i + 1].second) {
+					logTest<EmptyModel>("EmptyModel: Jump times are not increasing!");
+				}
+				size_t changing_count = 0;
+				for (size_t j = 0; j < skeleton[i].first.get_size(); j++) {
+					if (skeleton[i].first.get_node_value(j) != skeleton[i + 1].first.get_node_value(j)) {
+						changing_count++;
+					}
+				}
+				if (changing_count != 1) {
+					logTest<EmptyModel>("More or less than one node has been changed in a jump!");
+				}
+			}
+			logTest<EmptyModel>("Skeleton is ok!");
+		}
 		return skeleton;
 	}
 
@@ -81,17 +98,17 @@ private:
 		return 0.0;
 	}
 
-	//TODO mozna zoptymalizowac przy pomocy move semantics, jezeli bedzie za wole
 	TransitionRepository<Real_t> convert_skeleton_to_transition_repository(const std::vector<std::pair<State, Real_t>> &skeleton, const Real_t t_max) const {
 		OccupationTimes<Real_t> occupation_times = extract_occupation_times(skeleton, t_max);
 		std::vector<NodeTransitions<Real_t>> node_transitions;
 		std::unordered_map<Transition, Real_t, TransitionHash> transition_to_count;
 		std::unordered_map<State, std::unordered_set<Transition, TransitionHash>, StateHash> state_to_transition;
+		auto all_states = occupation_times.get_states();
 
+		//PREPROCESSING
 		for (size_t i = 0; i < 2 * preferences.size(); i++) {
 			node_transitions.push_back(NodeTransitions<Real_t>());
 		}
-		auto all_states = occupation_times.get_states();
 		for (auto state : all_states) {
 			state_to_transition[state] = std::unordered_set<Transition, TransitionHash>();
 		}
@@ -104,6 +121,37 @@ private:
 			}
 			transition_to_count[transition]++;
 		}
+		//END PREPROCESSING
+		if (TEST) {
+			if (all_states.size() > skeleton.size()) {
+				logTest<EmptyModel>("There are more states in <all_states> than in the skeleton!");
+			}
+			std::unordered_set<State, StateHash> all_states_set(all_states.begin(), all_states.end());
+			if (all_states.size() != all_states_set.size()) {
+				logTest<EmptyModel>("There are duplicate states in <all_states>!");
+			}
+			Real_t total_transition_count = 0.0;
+			for (auto &tran : transition_to_count) {
+				total_transition_count += tran.second;
+			}
+			if (std::abs(total_transition_count - skeleton.size() + 1.0) > 0.5) {
+				logTest<EmptyModel>("There are more transition counts than states!");
+			}
+			size_t total_transitions = 0;
+			size_t zero_transition_per_state = 0;
+			for (auto &el : state_to_transition) {
+				total_transitions += el.second.size();
+				if (el.second.size() == 0) {
+					zero_transition_per_state++;
+				}
+			}
+			if (total_transitions != transition_to_count.size()) {
+				logTest<EmptyModel>("Transition counts do not match!");
+			}
+			if (zero_transition_per_state > 1) {
+				logTest<EmptyModel>("There are more than one state with zero transitions!");
+			}
+		}
 
 		for (size_t i = 0; i < 2 * preferences.size(); i++) {
 			const size_t node = i / 2;
@@ -113,7 +161,7 @@ private:
 					auto time = occupation_times.get_occupation_time(state);
 					auto predictive_vector = state_to_predictive_vector(state, node);
 					auto transition_count = extract_transition_count(state, state_to_transition, transition_to_count, node, past_node_value);
-					node_transitions[2 * node + past_node_value].add(predictive_vector, time, transition_count);
+					node_transitions[i].add(predictive_vector, time, transition_count);
 				}
 			}
 		}

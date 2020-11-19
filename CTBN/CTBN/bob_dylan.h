@@ -18,7 +18,7 @@ private:
 	Real_t prune(const std::vector<Real_t> &vector, const Real_t delta, std::vector<Real_t> &result_place_holder) const {
 		Real_t non_zero_entries = 0.0;
 		for (size_t i = 0; i < vector.size(); i++) {
-			if (vector[i] >= delta || vector[i] <= -delta) {
+			if (std::abs(vector[i]) > delta) {
 				result_place_holder[i] = vector[i];
 				non_zero_entries++;
 			}
@@ -29,7 +29,7 @@ private:
 		return non_zero_entries;
 	}
 
-	Result<Real_t> solve(const Real_t number_of_nodes, ADMMSolver<Real_t> &solver, const Real_t number_of_jumps, const size_t node, const bool past_node_value) const {
+	Result<Real_t> solve(const Real_t number_of_nodes, ADMMSolver<Real_t> &solver, const Real_t number_of_jumps, const size_t node, const size_t past_node_value) const {
 		std::vector<Real_t> best_so_far;
 		Real_t best_so_far_score = 0.0;
 		bool best_set = false;
@@ -76,6 +76,7 @@ private:
 				best_prunned_so_far = prunning_place_holder;
                 best_delta = delta;
 			}
+			prunning_place_holder = best_so_far;
 		}
         if (DEBUG) {
             log("Best delta: ", best_delta);
@@ -102,7 +103,7 @@ public:
 				const size_t start = data_per_thread * th;
 				const size_t end = th + 1 == this->NUM_THREADS ? 2 * node_count : start + data_per_thread;
 				for (size_t i = start; i < end; i++) {
-					const bool node_value = i % 2 == 1;
+					const size_t node_value = i % 2;
 					auto result = this->solve(node_count, chain.first, chain.second.number_of_jumps, i / 2, node_value);
 					inference_result[i] = result;
 				}

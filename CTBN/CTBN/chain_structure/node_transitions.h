@@ -20,8 +20,8 @@ public:
 	void add(const std::vector<Real_t> &predictive, const Real_t time, const Real_t count) {
 		state_counts.push_back(count);
 		time_spent_in_state.push_back(time);
-		for (auto el : predictive) {
-			predictive_vectors.push_back(el);
+		for (size_t i = 0; i < predictive.size(); i++) {
+			predictive_vectors.push_back(predictive[i]);
 		}
 	}
 

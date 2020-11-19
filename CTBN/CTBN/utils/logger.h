@@ -11,7 +11,7 @@ constexpr bool DEBUG = true;
 /**
 * Set this to <code>true</code> if integrity of data structures should be tested during sampling
 */
-constexpr bool TEST = false;
+constexpr bool TEST = true;
 
 /**
 * Set this to <code>true</code> if debug information should be printed during sampling\n
@@ -39,6 +39,11 @@ template <class A0, class ...Args> void printErr(A0 a0, Args ...args)
 template <class ...Args> void log(Args ...args)
 {
 	return print(args...);
+}
+
+template <class TestClass, class ...Args> void logTest(Args ...args)
+{
+	return print("Test: ", typeid(TestClass).name(), "\n    Message: ", args...);
 }
 
 template <class ...Args> void logErr(Args ...args)
