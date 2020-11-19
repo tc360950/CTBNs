@@ -9,6 +9,7 @@
 #include "../chain_structure/transition_repository.h"
 #include "model_data.h"
 #include "../utils/logger.h"
+#include "../likelihood_calculator/tests/likelihood_test.h"
 
 template <class Real_t> class EmptyModel {
 private:
@@ -195,6 +196,18 @@ private:
 		auto bit = distrib(generator);
 		return  bit == 1 ? true : false;
 	}
+
+	//Dor test purposes only!
+	std::pair<ModelData<Real_t>, std::vector<std::pair<State, Real_t>>> sample_chain_and_skeleton(Real_t t_max) {
+		auto starting_state = simulate_starting_state();
+		auto skeleton = simulate(t_max, starting_state);
+		log("Simulated skeleton for list model of size ", skeleton.size());
+		auto transitions = convert_skeleton_to_transition_repository(skeleton, t_max);
+		log("Converted skeleton to transition repository");
+		auto dependence_structure = generate_dependence_structure();
+		return std::make_pair(ModelData<Real_t>(transitions, skeleton.size(), dependence_structure), skeleton);
+	}
+
 public:
 	EmptyModel<Real_t>(size_t number_of_nodes, long seed) :
 		generator{ seed } {
@@ -213,6 +226,8 @@ public:
 		auto dependence_structure = generate_dependence_structure();
 		return ModelData<Real_t>(transitions, skeleton.size(), dependence_structure);
 	}
+
+	friend class LikelihoodTest<Real_t>;
 };
 
 #endif // !EMPTY_MODEL_H

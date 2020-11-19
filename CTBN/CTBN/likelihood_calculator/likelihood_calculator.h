@@ -39,7 +39,7 @@ public:
 			const Real_t multiplier = -node_transitions.state_counts[i] * intensity 
 				+ std::exp(intensity) * node_transitions.time_spent_in_state[i];
 			result += multiplier;
-			start_od_predictive += transition_repository.get_parameters_size();
+			start_od_predictive += get_parameters_size();
 		}
 		return result / t_max;
 	}
@@ -53,7 +53,7 @@ public:
 			for (size_t j = 0; j < beta.size(); j++) {
 				result[j] += node_transitions.predictive_vectors_times_occupation[start_od_predictive + j] * exp_intensity;
 			}
-			start_od_predictive += transition_repository.get_parameters_size();
+			start_od_predictive += get_parameters_size();
 		}
 		std::transform(result.begin(), result.end(), node_transitions.sum_counts_times_predictive.begin(),
 			result.begin(), std::plus<Real_t>());

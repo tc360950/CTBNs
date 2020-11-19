@@ -9,8 +9,11 @@
 #include "models/list_model.h"
 #include "summary_statistics/statistics_factory.h"
 #include "models/empty_model.h"
+#include "likelihood_calculator/tests/likelihood_test.h"
 int main()
 {	
+	LikelihoodTest<double> tester;
+	tester.random_test(12145);
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	BobDylan<double, EmptyModel<double>> bob;
 	auto result = bob.simulate(20, 12314214, 50);
