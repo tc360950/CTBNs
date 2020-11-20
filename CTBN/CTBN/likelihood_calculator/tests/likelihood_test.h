@@ -22,6 +22,15 @@ private:
 		}
 		return result;
 	}
+
+	std::string vector_to_string(const std::vector<Real_t> &vec) {
+		std::string vector;
+		for (auto v : vec) {
+			vector.append(std::to_string(v));
+			vector.append(" ");
+		}
+		return vector;
+	}
 public:
 
 	void random_test(long model_seed) {
@@ -42,6 +51,25 @@ public:
 			}
 			else {
 				logTest<LikelihoodTest>("Likelihood comparison ok with: ", likelihood_1, " ", likelihood_2);
+			}
+		}
+
+		for (size_t i = 0; i < 2 * NUMBER_OF_NODES; i++) {
+			auto node = i / 2;
+			auto value = i % 2;
+			std::vector<Real_t> likelihood_gradient_1;
+			likelihood_gradient_1.resize(NUMBER_OF_NODES);
+			calculator.calculate_likelihood_gradient(beta, node, value, likelihood_gradient_1);
+			auto likelihood_gradient_2 = tester.calculate_gradient(beta, model_data.second, node, value);
+			bool ok = true;
+			for (size_t c = 0; c < likelihood_gradient_2.size(); c++) {
+				if (std::abs(likelihood_gradient_1[c] - likelihood_gradient_2[c]) >= TOLERANCE) {
+					logTest<LikelihoodTest>("Likelihood comparison fail with: ", vector_to_string(likelihood_gradient_1), " ", vector_to_string(likelihood_gradient_2));
+					ok = false;
+				}
+			}
+			if (ok) {
+				logTest<LikelihoodTest>("Likelihood comparison ok with: ", vector_to_string(likelihood_gradient_1), " ||| ", vector_to_string(likelihood_gradient_2));
 			}
 		}
 	}

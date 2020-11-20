@@ -13,7 +13,7 @@
 int main()
 {	
 	LikelihoodTest<double> tester;
-	tester.random_test(12145);
+	tester.random_test(12188845);
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	BobDylan<double, EmptyModel<double>> bob;
 	auto result = bob.simulate(20, 12314214, 50);
