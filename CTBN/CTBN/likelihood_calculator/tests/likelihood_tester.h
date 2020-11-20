@@ -17,7 +17,7 @@ private:
 			if (i != node) {
 				if (state.get_node_value(i) == 1) {
 					const size_t index = i < node ? i : i - 1;
-					result += beta[index];
+					result += beta[index + 1];
 				}
 			}
 		}
