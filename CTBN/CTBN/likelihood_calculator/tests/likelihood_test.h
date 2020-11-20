@@ -40,7 +40,6 @@ public:
 		LikelihoodCalculator<Real_t> calculator{ model_data.first.transition_repository, T_MAX };
 		LikelihoodTester<Real_t> tester{ NUMBER_OF_NODES, T_MAX };
 		auto beta = sample_beta();
-		logTest<LikelihoodTest>("DUPA");
 		for (size_t i = 0; i < 2 * NUMBER_OF_NODES; i++) {
 			auto node = i / 2;
 			auto value = i % 2;

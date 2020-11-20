@@ -6,6 +6,7 @@
 #include "../likelihood_calculator/likelihood_calculator.h"
 #include "../bob_dylan.h"
 #include "../utils/logger.h"
+#include "tests/admm_solver_test.h"
 
 template <class Real_t> class ADMMSolver {
 public:
@@ -159,5 +160,7 @@ public:
 		}
 		return std::make_tuple(z, likelihood_calculator.calculate_likelihood(z, node, past_node_value), get_non_zero_vector_elements(z));
 	}
+
+	friend class ADMMSolverTest<Real_t>;
 };
 #endif // !ADMM_SOLVER_H

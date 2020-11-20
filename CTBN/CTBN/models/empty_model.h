@@ -10,6 +10,7 @@
 #include "model_data.h"
 #include "../utils/logger.h"
 #include "../likelihood_calculator/tests/likelihood_test.h"
+#include "../solvers/tests/admm_solver_test.h"
 
 template <class Real_t> class EmptyModel {
 private:
@@ -228,6 +229,7 @@ public:
 	}
 
 	friend class LikelihoodTest<Real_t>;
+	friend class ADMMSolverTest<Real_t>;
 };
 
 #endif // !EMPTY_MODEL_H
