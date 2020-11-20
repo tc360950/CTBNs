@@ -75,8 +75,10 @@ public:
 				if (skeleton[i + 1].first.get_node_value(node) != skeleton[i].first.get_node_value(node)) {
 					for (size_t c = 0; c < result.size(); c++) {
 						result[c] -= predictive[c];
-						result[c] += std::exp(intensity + std::log(skeleton[i + 1].second - skeleton[i].second)) * predictive[c];
 					}
+				}
+				for (size_t c = 0; c < result.size(); c++) {
+					result[c] += std::exp(intensity + std::log(skeleton[i + 1].second - skeleton[i].second)) * predictive[c];
 				}
 			}
 		}
