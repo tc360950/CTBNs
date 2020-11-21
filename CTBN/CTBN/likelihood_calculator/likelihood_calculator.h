@@ -41,7 +41,7 @@ public:
 			result += multiplier;
 			start_od_predictive += get_parameters_size();
 		}
-		return result / t_max;
+		return result;
 	}
 
 	void calculate_likelihood_gradient(const std::vector<Real_t> &beta, size_t node, size_t past_node_value, std::vector<Real_t> &result) {
@@ -58,7 +58,7 @@ public:
 		std::transform(result.begin(), result.end(), node_transitions.sum_counts_times_predictive.begin(),
 			result.begin(), std::plus<Real_t>());
 		for (size_t j = 0; j < beta.size(); j++) {
-			result[j] = result[j] / t_max;
+			result[j] = result[j];
 		}
 	}
 };

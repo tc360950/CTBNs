@@ -36,7 +36,7 @@ private:
 		Real_t lambda = MAX_LAMBDA;
 		for (size_t i = 0; i < LAMBDA_COUNT; i++) {
 			auto result = solver.solve(SOLVER_ITERATIONS, node, past_node_value, lambda);
-			Real_t score = number_of_jumps * std::get<1>(result) + std::log(number_of_jumps) * std::get<2>(result);
+			Real_t score = std::get<1>(result) + std::log(number_of_jumps) * std::get<2>(result);
 			if (!best_set || score < best_so_far_score) {
 				best_set = true;
 				best_so_far_score = score;
@@ -64,7 +64,7 @@ private:
         Real_t best_delta;
 		for (auto delta : delta_sequence) {
 			Real_t non_zero_entries = prune(best_so_far, delta, prunning_place_holder);
-			Real_t score = number_of_jumps * solver.likelihood_calculator.calculate_likelihood(prunning_place_holder, node, past_node_value);
+			Real_t score =  solver.likelihood_calculator.calculate_likelihood(prunning_place_holder, node, past_node_value);
 			score += std::log(2 * number_of_nodes * (number_of_nodes - 1)) * non_zero_entries;
             if (DEBUG) {
                 log("Delta : ", delta, " total score: ", score, " number fo jumps: ", number_of_jumps);
