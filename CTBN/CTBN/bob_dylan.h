@@ -13,7 +13,7 @@ private:
 	const size_t NUM_THREADS = 1;
 	const size_t SOLVER_ITERATIONS = 10;
 	const Real_t MAX_LAMBDA = 100000.0;
-	const size_t LAMBDA_COUNT = 10;
+	const size_t LAMBDA_COUNT = 30;
 	Real_t time_max_local;
 
 	Real_t prune(const std::vector<Real_t> &vector, const Real_t delta, std::vector<Real_t> &result_place_holder) const {
