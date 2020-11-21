@@ -11,7 +11,7 @@
 template <class Real_t> class ADMMSolver {
 public:
 	LikelihoodCalculator<Real_t> likelihood_calculator;
-private:
+public:
 	const Real_t RO = 1.0;
 	const size_t L2_ITERATIONS = 10;
 	Real_t L2_STEP_SIZE = 0.01;
@@ -168,7 +168,5 @@ public:
 		}
 		return std::make_tuple(z, likelihood_calculator.calculate_likelihood(z, node, past_node_value), get_non_zero_vector_elements(z));
 	}
-
-	friend class ADMMSolverTest<Real_t>;
 };
 #endif // !ADMM_SOLVER_H
