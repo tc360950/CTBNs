@@ -189,7 +189,7 @@ private:
 		}
 
 		for (auto &nt : node_transitions) {
-			nt.end_add(preferences.size());
+			nt.end_add(state_to_predictive_vector(skeleton.front().first, 0).size());
 		}
 		return TransitionRepository<Real_t>{node_transitions, preferences.size(), state_to_predictive_vector(skeleton.front().first, 0).size()};
 	}
@@ -234,8 +234,8 @@ public:
 			auto parent_1 = distribution(generator);
 			auto parent_2 = distribution(generator);
 			while (parent_1 == parent_2 || parent_1 == i || parent_2 == i) {
-				auto parent_1 = distribution(generator);
-				auto parent_2 = distribution(generator);
+				parent_1 = distribution(generator);
+				parent_2 = distribution(generator);
 			}
 			parents.push_back(std::make_pair(parent_1, parent_2));
 		}

@@ -14,7 +14,8 @@
 #include "solvers/tests/admm_solver_test.h"
 int main(int argc, char **argv)
 {	
-    long seed = std::stol(argv[1]);
+    //long seed = std::stol(argv[1]);
+	long seed = 124;
 	ADMMSolverTest<double> admm_test;
 	//admm_test.test(1243453, 0.1);
 
