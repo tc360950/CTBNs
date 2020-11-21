@@ -10,6 +10,7 @@
 #include "summary_statistics/statistics_factory.h"
 #include "models/empty_model.h"
 #include "likelihood_calculator/tests/likelihood_test.h"
+#include "solvers/tests/admm_solver_test.h"
 int main()
 {	
 

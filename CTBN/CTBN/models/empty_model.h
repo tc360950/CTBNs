@@ -9,11 +9,9 @@
 #include "../chain_structure/transition_repository.h"
 #include "model_data.h"
 #include "../utils/logger.h"
-#include "../likelihood_calculator/tests/likelihood_test.h"
-#include "../solvers/tests/admm_solver_test.h"
 
 template <class Real_t> class EmptyModel {
-private:
+public:
 	std::mt19937 generator;
 	std::vector<bool> preferences;
 
@@ -227,9 +225,6 @@ public:
 		auto dependence_structure = generate_dependence_structure();
 		return ModelData<Real_t>(transitions, skeleton.size(), dependence_structure);
 	}
-
-	friend class LikelihoodTest<Real_t>;
-	friend class ADMMSolverTest<Real_t>;
 };
 
 #endif // !EMPTY_MODEL_H

@@ -6,7 +6,6 @@
 #include "../likelihood_calculator/likelihood_calculator.h"
 #include "../bob_dylan.h"
 #include "../utils/logger.h"
-#include "tests/admm_solver_test.h"
 
 template <class Real_t> class ADMMSolver {
 public:
