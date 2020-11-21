@@ -12,11 +12,12 @@
 #include "likelihood_calculator/tests/likelihood_test.h"
 int main()
 {	
-	LikelihoodTest<double> tester;
-	tester.random_test(12188845);
 
 	ADMMSolverTest<double> admm_test;
-	admm_test.test(1243453);
+	admm_test.test(1243453, 0.1);
+
+	LikelihoodTest<double> tester;
+	tester.random_test(12188845);
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	BobDylan<double, EmptyModel<double>> bob;

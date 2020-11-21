@@ -14,23 +14,31 @@ public:
 private:
 	const Real_t RO = 1.0;
 	const size_t L2_ITERATIONS = 10;
-	const Real_t L2_STEP_SIZE = 0.1;
+	Real_t L2_STEP_SIZE = 0.01;
 	const Real_t EPSILON = 0.000000001;
 	const Real_t STOPPING_EPSILON = 0.0001;
+	const Real_t MOMENTUM_GAMMA = 0.9;
 
-	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const bool past_node_value, std::vector<Real_t> &gradient_holder) {
+	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const size_t past_node_value, std::vector<Real_t> &gradient_holder) {
 		bool stop = false;
+		size_t counter = 0;
+		std::vector<Real_t> momentum;
+		momentum.resize(x.size());
+		std::fill(momentum.begin(), momentum.end(), 0.0);
 		while (!stop) {
 			likelihood_calculator.calculate_likelihood_gradient(x, node, past_node_value, gradient_holder);
 			for (size_t n = 0; n < gradient_holder.size(); n++) {
 				gradient_holder[n] += RO * (x[n] - (z[n] - u[n]));
-				x[n] -= L2_STEP_SIZE * gradient_holder[n];
+				momentum[n] = MOMENTUM_GAMMA * momentum[n] + L2_STEP_SIZE * gradient_holder[n];
+				x[n] -= momentum[n];
 			}
 			auto gradient_norm = get_vector_l2_norm(gradient_holder);
 			if (gradient_norm <= STOPPING_EPSILON) {
 				stop = true;
 			}
+			counter++;
 		}
+		std::cout << counter << "\n";
 	}
 
 	void update_z(const std::vector<Real_t> &u, const std::vector<Real_t> &x, std::vector<Real_t> &z, const Real_t lambda) {
@@ -123,7 +131,7 @@ public:
 	ADMMSolver<Real_t>(LikelihoodCalculator<Real_t> likelihood_calculator) :
 		likelihood_calculator{ likelihood_calculator } {}
 	// pierwszy element return to beta, drugi n * lik trzeci ||beta||
-	std::tuple<std::vector<Real_t>, Real_t, Real_t> solve(const size_t iterations, const size_t node, const bool past_node_value, const Real_t lambda) {
+	std::tuple<std::vector<Real_t>, Real_t, Real_t> solve(const size_t iterations, const size_t node, const size_t past_node_value, const Real_t lambda) {
 		std::vector<Real_t> x = get_starting_x(likelihood_calculator.get_parameters_size());
 		std::vector<Real_t> z = get_starting_z(likelihood_calculator.get_parameters_size());
 		std::vector<Real_t> u = get_starting_u(likelihood_calculator.get_parameters_size());

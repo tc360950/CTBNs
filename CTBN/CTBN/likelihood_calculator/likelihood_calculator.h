@@ -49,9 +49,11 @@ public:
 		std::fill(result.begin(), result.end(), 0.0);
 		const NodeTransitions<Real_t> &node_transitions = transition_repository.fetch_node_transitions(node, past_node_value);
 		for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
-			const Real_t exp_intensity = std::exp(get_intensity(beta, node_transitions.predictive_vectors, start_od_predictive));
+			const Real_t intensity = get_intensity(beta, node_transitions.predictive_vectors, start_od_predictive);
 			for (size_t j = 0; j < beta.size(); j++) {
-				result[j] += node_transitions.predictive_vectors_times_occupation[start_od_predictive + j] * exp_intensity;
+				if (node_transitions.predictive_vectors[start_od_predictive + j] != 0.0) {
+					result[j] += std::exp(node_transitions.time_spent_in_state[i] + intensity);
+				}
 			}
 			start_od_predictive += get_parameters_size();
 		}

@@ -42,7 +42,7 @@ private:
 		return result;
 	}
 
-	std::vector<Real_t> solve(LikelihoodCalculator<Real_t> calculator) {
+	std::vector<Real_t> solve(LikelihoodCalculator<Real_t> calculator, const size_t node, const size_t past_node_value, const Real_t lambda) {
 		ADMMSolver<Real_t> admm_solver{ calculator };
 		std::vector<Real_t> x = get_starting_x(NUMBER_OF_NODES);
 		std::vector<Real_t> z = get_starting_z(NUMBER_OF_NODES);
@@ -52,7 +52,7 @@ private:
 		bool stop = false;
 		size_t counter = 0;
 		while (!stop) {
-			for (size_t i = 0; i < iterations - 1; i++) {
+			for (size_t i = 0; i < 10 - 1; i++) {
 				admm_solver.update_x(u, z, x, node, past_node_value, gradient_holder);
 				admm_solver.update_z(u, x, z, lambda);
 				admm_solver.update_u(z, x, u);
@@ -70,24 +70,27 @@ private:
 	}
 
 public:
-	void test(long seed) {
+	void test(long seed, Real_t lambda) {
 		EmptyModel<Real_t> model{ NUMBER_OF_NODES, seed };
 		auto model_data = model.sample_chain_and_skeleton(T_MAX);
 		LikelihoodCalculator<Real_t> calculator{ model_data.first.transition_repository, T_MAX };
-		ADMMSolver<Real_t> admm{calculator};
-		auto z = solve(calculator);
-		bool ok = true;
-		for (size_t t = 0; t < NUMBER_OF_TESTS; t++) {
-			auto z_2 = solve(calculator);
-			for (size_t i = 0; i < z.size(); i++) {
-				if (std::abs(z[i] - z_2[i]) >= TOLERANCE) {
-					logTest<ADMMSolverTest>("Test fail at ", z[i], "vs", z_2[i]);
-					ok = false;
+		for (size_t i = 0; i < 2 * NUMBER_OF_NODES; i++) {
+			auto node = i / 2;
+			auto value = i % 2;
+			auto z = solve(calculator, node, value, lambda);
+			bool ok = true;
+			for (size_t t = 0; t < NUMBER_OF_TESTS; t++) {
+				auto z_2 = solve(calculator, node, value, lambda);
+				for (size_t i = 0; i < z.size(); i++) {
+					if (std::abs(z[i] - z_2[i]) >= TOLERANCE) {
+						logTest<ADMMSolverTest>("Test fail at ", z[i], "vs", z_2[i]);
+						ok = false;
+					}
 				}
 			}
-		}
-		if (ok) {
-			logTest<ADMMSolverTest>("Test ok!");
+			if (ok) {
+				logTest<ADMMSolverTest>("Test ok!");
+			}
 		}
 	}
 };
