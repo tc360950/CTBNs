@@ -15,8 +15,8 @@ template <class Real_t, class Model> class StatisticsFactory {
 		for (size_t node = 0; node < number_of_nodes; node++) {
 			for (size_t i = 1; i < simulation_result.inference_results[2 * node].beta.size(); i++) {
 				if (simulation_result.inference_results[2 * node].beta[i] != 0.0 || simulation_result.inference_results[2 * node + 1].beta[i] != 0.0) {
-					size_t node2 = i >= node ? i + 1 : i;
-					result.insert(std::make_pair(node, node2));
+					size_t node2 = i - 1 >= node ? i : i - 1;
+					result.insert(std::make_pair(node2, node));
 				}
 			}
 		}
