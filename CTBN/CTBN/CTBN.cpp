@@ -7,6 +7,7 @@
 #include "CTBN.h"
 #include "bob_dylan.h"
 #include "models/list_model.h"
+#include "models/correlated_model.h"
 #include "summary_statistics/statistics_factory.h"
 #include "models/empty_model.h"
 #include "likelihood_calculator/tests/likelihood_test.h"
@@ -21,11 +22,11 @@ int main(int argc, char **argv)
 	//tester.random_test(12188845);
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-	BobDylan<double, ListModel<double>> bob;
+	BobDylan<double, CorrelatedModel<double>> bob;
 	auto result = bob.simulate(20, seed, 50);
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << "[µs]" << std::endl;
-	StatisticsFactory<double, ListModel<double>> factory;
+	StatisticsFactory<double, CorrelatedModel<double>> factory;
 	auto stats = factory.convert(20, 50, result.model_data, result);
     std::cout << stats.power << "\n";
     std::cout << stats.FDR << "\n";

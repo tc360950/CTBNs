@@ -1,10 +1,11 @@
 #ifndef CORRELATED_MODEL_H
 #define CORRELATED_MODEL_H
 #include <random>
-#include <pair>
+#include <utility>
 
 #include "../chain_structure/transition_repository.h"
 #include "model_data.h"
+#include "../utils/logger.h"
 
 template <class Real_t> class CorrelatedModel {
 private:
@@ -38,7 +39,7 @@ private:
 		if (TEST) {
 			for (size_t i = 0; i < skeleton.size() - 1; i++) {
 				if (skeleton[i].second >= skeleton[i + 1].second) {
-					logTest<EmptyModel>("EmptyModel: Jump times are not increasing!");
+					logTest<CorrelatedModel>("EmptyModel: Jump times are not increasing!");
 				}
 				size_t changing_count = 0;
 				for (size_t j = 0; j < skeleton[i].first.get_size(); j++) {
@@ -47,10 +48,10 @@ private:
 					}
 				}
 				if (changing_count != 1) {
-					logTest<EmptyModel>("More or less than one node has been changed in a jump!");
+					logTest<CorrelatedModel>("More or less than one node has been changed in a jump!");
 				}
 			}
-			logTest<EmptyModel>("Skeleton is ok!");
+			logTest<CorrelatedModel>("Skeleton is ok!");
 		}
 		return skeleton;
 	}
@@ -145,18 +146,18 @@ private:
 		//END PREPROCESSING
 		if (TEST) {
 			if (all_states.size() > skeleton.size()) {
-				logTest<EmptyModel>("There are more states in <all_states> than in the skeleton!");
+				logTest<CorrelatedModel>("There are more states in <all_states> than in the skeleton!");
 			}
 			std::unordered_set<State, StateHash> all_states_set(all_states.begin(), all_states.end());
 			if (all_states.size() != all_states_set.size()) {
-				logTest<EmptyModel>("There are duplicate states in <all_states>!");
+				logTest<CorrelatedModel>("There are duplicate states in <all_states>!");
 			}
 			Real_t total_transition_count = 0.0;
 			for (auto &tran : transition_to_count) {
 				total_transition_count += tran.second;
 			}
 			if (std::abs(total_transition_count - skeleton.size() + 1.0) > 0.5) {
-				logTest<EmptyModel>("There are more transition counts than states!");
+				logTest<CorrelatedModel>("There are more transition counts than states!");
 			}
 			size_t total_transitions = 0;
 			size_t zero_transition_per_state = 0;
@@ -167,10 +168,10 @@ private:
 				}
 			}
 			if (total_transitions != transition_to_count.size()) {
-				logTest<EmptyModel>("Transition counts do not match!");
+				logTest<CorrelatedModel>("Transition counts do not match!");
 			}
 			if (zero_transition_per_state > 1) {
-				logTest<EmptyModel>("There are more than one state with zero transitions!");
+				logTest<CorrelatedModel>("There are more than one state with zero transitions!");
 			}
 		}
 
@@ -223,8 +224,8 @@ private:
 
 public:
 	CorrelatedModel<Real_t>(size_t number_of_nodes, long seed) :
-		generator{ seed },
-		preferences{ number_of_nodes } {
+		generator{ seed } {
+		preferences.resize(number_of_nodes);
 		for (size_t i = 0; i < number_of_nodes; i++) {
 			preferences[i] = random_bit();
 		}

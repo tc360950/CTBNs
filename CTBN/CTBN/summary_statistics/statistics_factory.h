@@ -7,6 +7,8 @@
 #include "../models/model_data.h"
 #include "../bob_dylan.h"
 #include "../utils/result.h"
+#include "../models/correlated_model.h"
+
 //TODO trzbea to torche inaczje robic przy interakcjach 
 template <class Real_t, class Model> class StatisticsFactory {
 
@@ -69,5 +71,29 @@ public:
 	}
 };
 
-
+template <> std::set<std::pair<size_t, size_t>> 
+	StatisticsFactory<double, CorrelatedModel<double>>::gather_edges(const size_t number_of_nodes, SimulationResult<double> simulation_result) {
+		std::set<std::pair<size_t, size_t>> result;
+		for (size_t node = 0; node < number_of_nodes; node++) {
+			for (size_t i = 1; i < number_of_nodes; i++) {
+				if (simulation_result.inference_results[2 * node].beta[i] != 0.0 || simulation_result.inference_results[2 * node + 1].beta[i] != 0.0) {
+					size_t node2 = i - 1 >= node ? i : i - 1;
+					result.insert(std::make_pair(node2, node));
+				}
+			}
+			size_t counter = 0;
+			for (size_t i = 0; i < number_of_nodes; i++) {
+				for (size_t j = 0; j < number_of_nodes; j++) {
+					if (i != node && j != node && i < j) {
+						if (simulation_result.inference_results[2 * node].beta[counter + number_of_nodes] != 0.0 || simulation_result.inference_results[2 * node + 1].beta[counter + number_of_nodes] != 0.0) {
+							result.insert(std::make_pair(i, node));
+							result.insert(std::make_pair(j, node));
+						}
+						counter++;
+					}
+				}
+			}
+		}
+		return result;
+	}
 #endif // !STATISTICS_FACTORY_H
