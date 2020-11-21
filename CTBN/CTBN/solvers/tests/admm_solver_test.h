@@ -11,7 +11,7 @@ private:
 	const size_t NUMBER_OF_NODES = 20;
 	const long SEED = 213141;
 	const Real_t T_MAX = 50.0;
-	const Real_t TOLERANCE = 0.0001;
+	const Real_t TOLERANCE = 0.01;
 	const size_t NUMBER_OF_TESTS = 5;
 	std::mt19937 generator{ SEED };
 

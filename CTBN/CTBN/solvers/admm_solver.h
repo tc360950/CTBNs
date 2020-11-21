@@ -28,6 +28,9 @@ public:
 			likelihood_calculator.calculate_likelihood_gradient(x, node, past_node_value, gradient_holder);
 			for (size_t n = 0; n < gradient_holder.size(); n++) {
 				gradient_holder[n] += RO * (x[n] - (z[n] - u[n]));
+				if (std::abs(gradient_holder[n]) > 100.0) {
+					gradient_holder[n] = gradient_holder[n] < 0 ? -100.0 : 100.0;
+				}
 				momentum[n] = MOMENTUM_GAMMA * momentum[n] + L2_STEP_SIZE * gradient_holder[n];
 				x[n] -= momentum[n];
 			}
