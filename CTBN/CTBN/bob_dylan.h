@@ -14,6 +14,7 @@ private:
 	const size_t SOLVER_ITERATIONS = 10;
 	const Real_t MAX_LAMBDA = 100000.0;
 	const size_t LAMBDA_COUNT = 10;
+	Real_t time_max_local;
 
 	Real_t prune(const std::vector<Real_t> &vector, const Real_t delta, std::vector<Real_t> &result_place_holder) const {
 		Real_t non_zero_entries = 0.0;
@@ -36,7 +37,7 @@ private:
 		Real_t lambda = MAX_LAMBDA;
 		for (size_t i = 0; i < LAMBDA_COUNT; i++) {
 			auto result = solver.solve(SOLVER_ITERATIONS, node, past_node_value, lambda);
-			Real_t score = std::get<1>(result) + std::log(number_of_jumps) * std::get<2>(result);
+			Real_t score = std::get<1>(result) + std::log(number_of_jumps) * std::get<2>(result) / time_max_local;
 			if (!best_set || score < best_so_far_score) {
 				best_set = true;
 				best_so_far_score = score;
@@ -65,7 +66,7 @@ private:
 		for (auto delta : delta_sequence) {
 			Real_t non_zero_entries = prune(best_so_far, delta, prunning_place_holder);
 			Real_t score =  solver.likelihood_calculator.calculate_likelihood(prunning_place_holder, node, past_node_value);
-			score += std::log(2 * number_of_nodes * (number_of_nodes - 1)) * non_zero_entries;
+			score += std::log(2 * number_of_nodes * (number_of_nodes - 1)) * non_zero_entries / time_max_local;
             if (DEBUG) {
                 log("Delta : ", delta, " total score: ", score, " number fo jumps: ", number_of_jumps);
                 log("Likelihood: ",  solver.likelihood_calculator.calculate_likelihood(prunning_place_holder, node, past_node_value), " non_zero_entries ", non_zero_entries);
@@ -96,6 +97,7 @@ public:
 	SimulationResult<Real_t> simulate(const size_t node_count, const long seed, const Real_t t_max) {
 		std::vector<Result<Real_t>> inference_result(2 * node_count);
 		auto chain = sample_chain(node_count, seed, t_max);
+		time_max_local = t_max;
 		std::vector<std::thread> threads;
 		const size_t data_per_thread = 2 * node_count / NUM_THREADS;
 		for (int th = 0; th < NUM_THREADS; th++) {
