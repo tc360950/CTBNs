@@ -15,7 +15,7 @@ public:
 	const size_t L2_ITERATIONS = 10;
 	Real_t L2_STEP_SIZE = 0.01;
 	const Real_t EPSILON = 0.000000001;
-	const Real_t STOPPING_EPSILON = 0.0001;
+	const Real_t STOPPING_EPSILON = 0.001;
 	const Real_t MOMENTUM_GAMMA = 0.9;
 
 	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const size_t past_node_value, std::vector<Real_t> &gradient_holder) {
@@ -127,6 +127,7 @@ public:
 		const std::vector<Real_t> &old_z) const {
 		Real_t e_primal = std::sqrt(x.size()) * STOPPING_EPSILON + STOPPING_EPSILON * std::max(get_vector_l2_norm(x), get_vector_l2_norm(z));
 		Real_t e_dual = std::sqrt(x.size()) * STOPPING_EPSILON;
+		std::cout << "Dupa1: " << difference_norm(z, old_z) << " dupa2: " << difference_norm(u, old_u) << "\n";
 		return e_primal >= difference_norm(u, old_u) && e_dual >= RO * difference_norm(z, old_z);
 	}
 public:

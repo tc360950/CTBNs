@@ -66,7 +66,7 @@ private:
 				return parent_product ? 9.0 : 1.0;
 			}
 			else {
-				return parent_product ? 1.0 : 0.0;
+				return parent_product ? 1.0 : 9.0;
 			}
 		}
 	}
