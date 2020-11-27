@@ -40,7 +40,7 @@ public:
 			}
 			counter++;
 		}
-		std::cout << counter << "\n";
+		//std::cout << counter << "\n";
 	}
 
 	void update_z(const std::vector<Real_t> &u, const std::vector<Real_t> &x, std::vector<Real_t> &z, const Real_t lambda) {
