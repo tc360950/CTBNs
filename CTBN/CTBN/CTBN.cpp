@@ -2,7 +2,9 @@
 //
 #include <random>
 #include <chrono>
-
+#include <thread>
+#include <cstdlib>
+#include <ctime>
 
 #include "CTBN.h"
 #include "bob_dylan.h"
@@ -13,10 +15,49 @@
 #include "models/correlated_model_no_interactions.h"
 #include "likelihood_calculator/tests/likelihood_test.h"
 #include "solvers/tests/admm_solver_test.h"
+#include "utils/logger.h"
+
+
+template <class Model> void simulate(double t_max, size_t no_of_nodes) {
+	std::vector<Statistics<double>> results;
+	results.resize(25);
+	std::vector<std::thread> threads;
+	std::srand(std::time(nullptr));
+
+	for (size_t i = 0; i < 25; i++) {
+		auto seed = std::rand();
+		threads.emplace_back([t_max, no_of_nodes, seed, i, &results ] {
+			BobDylan<double, Model> bob;
+			StatisticsFactory<double, Model> factory;
+			auto result = bob.simulate(no_of_nodes, seed, t_max);
+			auto stats = factory.convert(no_of_nodes, t_max, result.model_data, result);
+			results[i] = stats;
+		});
+	}
+	for (auto &th : threads)
+	{
+		th.join();
+	}
+	for (size_t i = 1; i < 25; i++) {
+		results[0].add(results[i]);
+	}
+	logTest<Model>("Results: \n", "FDR: ", results[0].FDR / 25, "\nMD: ", results[0].MD, "\nPOWER: ", results[0].power);
+}
+
 int main(int argc, char **argv)
 {	
     long seed = std::stol(argv[1]);
-	ADMMSolverTest<double> admm_test;
+	simulate<ListModel<double>>(10, 20);
+	simulate<ListModel<double>>(50, 20);
+	simulate<ListModel<double>>(50, 50);
+	simulate<ListModel<double>>(10, 50);
+
+	simulate<CorrelatedModelNoInteractions<double>>(10, 20);
+	simulate<CorrelatedModelNoInteractions<double>>(50, 20);
+
+	
+	
+	/*ADMMSolverTest<double> admm_test;
 	//admm_test.test(1243453, 0.1);
 
 	LikelihoodTest<double> tester;
@@ -32,6 +73,6 @@ int main(int argc, char **argv)
     std::cout << stats.power << "\n";
     std::cout << stats.FDR << "\n";
     std::cout << stats.MD << "\n";
-	while (true) {}
+	while (true) {}*/
 	return 0;
 }
