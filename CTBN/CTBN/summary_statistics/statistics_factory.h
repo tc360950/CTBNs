@@ -54,7 +54,7 @@ template <class Real_t, class Model> class StatisticsFactory {
 				selected++;
 			}
 		}
-		return selected / (Real_t)inferred_edges.size();
+		return selected / std::max(1.0, (Real_t)inferred_edges.size());
 	}
 public:
 	Statistics<Real_t> convert(const size_t number_of_nodes, const Real_t time, ModelData<Real_t> model_data, SimulationResult<Real_t> simulation_result) {

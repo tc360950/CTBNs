@@ -127,7 +127,7 @@ public:
 		const std::vector<Real_t> &old_z) const {
 		Real_t e_primal = std::sqrt(x.size()) * STOPPING_EPSILON + STOPPING_EPSILON * std::max(get_vector_l2_norm(x), get_vector_l2_norm(z));
 		Real_t e_dual = std::sqrt(x.size()) * STOPPING_EPSILON;
-		std::cout << "Dupa1: " << difference_norm(z, old_z) << " dupa2: " << difference_norm(u, old_u) << "\n";
+		//std::cout << "Dupa1: " << difference_norm(z, old_z) << " dupa2: " << difference_norm(u, old_u) << "\n";
 		return e_primal >= difference_norm(u, old_u) && e_dual >= RO * difference_norm(z, old_z);
 	}
 public:

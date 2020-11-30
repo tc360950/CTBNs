@@ -41,7 +41,7 @@ template <class Model> void simulate(double t_max, size_t no_of_nodes) {
 	for (size_t i = 1; i < 25; i++) {
 		results[0].add(results[i]);
 	}
-	logTest<Model>("Results: \n", "FDR: ", results[0].FDR / 25, "\nMD: ", results[0].MD, "\nPOWER: ", results[0].power);
+	logTest<Model>("Results: \n", "FDR: ", results[0].FDR / 25, "\nMD: ", results[0].MD/25, "\nPOWER: ", results[0].power / 25);
 }
 
 int main(int argc, char **argv)
