@@ -7,8 +7,6 @@
 template <class Real_t> class BinaryTree {
 private:
 	std::mt19937 generator;
-	//tylko pierwsze 5 nodeow
-	std::vector<std::pair<size_t, size_t>> parents;
 	std::vector<bool> preferences;
 	std::vector<std::vector<bool>> tree;
 
@@ -197,7 +195,7 @@ private:
 				vec.push_back(false);
 			}
 		}
-		for (size_t i = 1; i < parents.size(); i++) {
+		for (size_t i = 1; i < preferences.size(); i++) {
 			dependence[i][i/2] = true;
 		}
 		this->tree = dependence;
