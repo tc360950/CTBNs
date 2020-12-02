@@ -188,7 +188,7 @@ private:
 		return TransitionRepository<Real_t>{node_transitions, preferences.size(), state_to_predictive_vector(skeleton.front().first, 0).size()};
 	}
 
-	void generate_dependence_structure() const {
+	void generate_dependence_structure() {
 		std::vector<std::vector<bool>> dependence{ preferences.size() };
 		for (auto &vec : dependence) {
 			for (size_t i = 0; i < preferences.size(); i++) {
