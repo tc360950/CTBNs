@@ -18,6 +18,7 @@
 #include "utils/logger.h"
 #include "utils/random_tree_generator.h"
 #include "models/binary_tree_model.h"
+#include "models/det_binary_tree.h"
 
 template <class Model> void simulate(double t_max, size_t no_of_nodes) {
 	const size_t TRIES = 1;
@@ -49,10 +50,8 @@ template <class Model> void simulate(double t_max, size_t no_of_nodes) {
 int main(int argc, char **argv)
 {	
 	long seed = 12312;//std::stol(argv[1]);
-	RandomTree<double> randomTree(12312);
-	auto tree = randomTree.generate_random_binary_tree(5);
-	simulate<TreeModelNoInteractions<double>>(10, 20);
-	simulate<TreeModelNoInteractions<double>>(50, 20);
+	simulate<BinaryTree<double>>(10, 20);
+	simulate<BinaryTree<double>>(50, 20);
 	/*
 	simulate<ListModel<double>>(10, 20);
 	simulate<ListModel<double>>(50, 20);
