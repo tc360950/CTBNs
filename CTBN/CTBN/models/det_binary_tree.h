@@ -222,7 +222,7 @@ public:
 		for (size_t i = 0; i < number_of_nodes; i++) {
 			preferences[i] = random_bit();
 		}
-
+		generate_dependence_structure();
 	}
 
 	ModelData<Real_t> sample_chain(Real_t t_max) {
