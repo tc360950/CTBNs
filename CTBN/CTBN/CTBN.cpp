@@ -16,15 +16,17 @@
 #include "likelihood_calculator/tests/likelihood_test.h"
 #include "solvers/tests/admm_solver_test.h"
 #include "utils/logger.h"
-
+#include "utils/random_tree_generator.h"
+#include "models/binary_tree_model.h"
 
 template <class Model> void simulate(double t_max, size_t no_of_nodes) {
+	const size_t TRIES = 1;
 	std::vector<Statistics<double>> results;
-	results.resize(25);
+	results.resize(TRIES);
 	std::vector<std::thread> threads;
 	std::srand(std::time(nullptr));
 
-	for (size_t i = 0; i < 25; i++) {
+	for (size_t i = 0; i < TRIES; i++) {
 		auto seed = std::rand();
 		threads.emplace_back([t_max, no_of_nodes, seed, i, &results ] {
 			BobDylan<double, Model> bob;
@@ -38,15 +40,20 @@ template <class Model> void simulate(double t_max, size_t no_of_nodes) {
 	{
 		th.join();
 	}
-	for (size_t i = 1; i < 25; i++) {
+	for (size_t i = 1; i < TRIES; i++) {
 		results[0].add(results[i]);
 	}
-	logTest<Model>("Results: \n", "FDR: ", results[0].FDR / 25, "\nMD: ", results[0].MD/25, "\nPOWER: ", results[0].power / 25);
+	logTest<Model>("Results: \n", "FDR: ", results[0].FDR / TRIES, "\nMD: ", results[0].MD/ TRIES, "\nPOWER: ", results[0].power / TRIES);
 }
 
 int main(int argc, char **argv)
 {	
-    long seed = std::stol(argv[1]);
+	long seed = 12312;//std::stol(argv[1]);
+	RandomTree<double> randomTree(12312);
+	auto tree = randomTree.generate_random_binary_tree(5);
+	simulate<TreeModelNoInteractions<double>>(10, 20);
+	simulate<TreeModelNoInteractions<double>>(50, 20);
+	/*
 	simulate<ListModel<double>>(10, 20);
 	simulate<ListModel<double>>(50, 20);
 	simulate<ListModel<double>>(50, 50);
@@ -54,7 +61,7 @@ int main(int argc, char **argv)
 
 	simulate<CorrelatedModelNoInteractions<double>>(10, 20);
 	simulate<CorrelatedModelNoInteractions<double>>(50, 20);
-
+	*/
 	
 	
 	/*ADMMSolverTest<double> admm_test;
