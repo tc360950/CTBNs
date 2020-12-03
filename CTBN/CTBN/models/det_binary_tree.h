@@ -64,16 +64,38 @@ private:
 		return std::make_pair(result, parents_count);
 	}
 
+	bool get_parent_or(size_t node, const State &state) const {
+		bool result = false;
+		for (size_t i = 0; i < tree.size(); i++) {
+			if (tree[i][node]) {
+				result = result || state.get_node_value(i);
+			}
+		}
+		return result;
+	}
+
 	Real_t get_intensity(size_t node, bool node_value, const State &state) const {
 		auto parent_product = get_parent_product(node, state);
+		auto parent_or = get_parent_or(node, state);
 		if (parent_product.second == 0) {
 			return 5.0;
 		}
-		if (state.get_node_value(node) == preferences[node]) {
-			return parent_product.first ? 9.0 : 1.0;
+		if (parent_product.second == 1) {
+			if (parent_product.first == preferences[node]) {
+				return node_value ? 9.0 : 1.0;
+			}
+			else {
+				return node_value ? 1.0 : 9.0;
+			}
+		}
+		if (!parent_product.first && parent_or) {
+			return 5.0;
+		}
+		if (parent_product.first == preferences[node]) {
+			return node_value ? 9.0 : 1.0;
 		}
 		else {
-			return parent_product.first ? 1.0 : 9.0;
+			return node_value ? 1.0 : 9.0;
 		}
 	}
 
@@ -185,6 +207,11 @@ private:
 		for (auto &nt : node_transitions) {
 			nt.end_add(state_to_predictive_vector(skeleton.front().first, 0).size());
 		}
+
+		for (size_t i = 0; i < 2 * preferences.size(); i++) {
+			node_transitions[i].gather_jump_information(i / 2, i % 2, skeleton);
+		}
+
 		return TransitionRepository<Real_t>{node_transitions, preferences.size(), state_to_predictive_vector(skeleton.front().first, 0).size()};
 	}
 

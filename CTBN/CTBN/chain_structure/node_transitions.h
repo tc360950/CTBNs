@@ -14,6 +14,9 @@ public:
 	**/
 	std::vector<Real_t> sum_counts_times_predictive;
 	std::vector<Real_t> predictive_vectors_times_occupation;
+
+	size_t number_of_value_changing_jumps;
+	size_t number_of_jumps_from_node_value;
 	NodeTransitions<Real_t>() {
 	}
 
@@ -41,6 +44,16 @@ public:
 		}
 	}
 
+	void gather_jump_information(const size_t node, const size_t node_value, const std::vector<std::pair<State, Real_t>> &skeleton) {
+		for (size_t i = 0; i < skeleton.size() - 1; i++) {
+			if (skeleton[i].first.get_node_value(node) == node_value) {
+				number_of_jumps_from_node_value++;
+				if (skeleton[i].first.get_node_value(node) != skeleton[i + 1].first.get_node_value(node)) {
+					number_of_value_changing_jumps++;
+				}
+			}
+		}
+	}
 };
 
 #endif // !NODE_TRANSITIONS_H

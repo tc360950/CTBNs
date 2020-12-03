@@ -5,7 +5,6 @@
 
 #include "../chain_structure/transition_repository.h"
 #include "../chain_structure/state.h"
-#include "../parameters/parameters.h"
 
 template <class Real_t> class LikelihoodCalculator {
 private:

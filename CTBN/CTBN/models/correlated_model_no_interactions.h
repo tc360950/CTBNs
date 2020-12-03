@@ -179,6 +179,11 @@ private:
 		for (auto &nt : node_transitions) {
 			nt.end_add(state_to_predictive_vector(skeleton.front().first, 0).size());
 		}
+
+		for (size_t i = 0; i < 2 * preferences.size(); i++) {
+			node_transitions[i].gather_jump_information(i / 2, i % 2, skeleton);
+		}
+
 		return TransitionRepository<Real_t>{node_transitions, preferences.size(), state_to_predictive_vector(skeleton.front().first, 0).size()};
 	}
 

@@ -17,8 +17,8 @@
 #include "solvers/tests/admm_solver_test.h"
 #include "utils/logger.h"
 #include "utils/random_tree_generator.h"
-#include "models/binary_tree_model.h"
 #include "models/det_binary_tree.h"
+#include "utils/parameters.h"
 
 template <class Model> void simulate(double t_max, size_t no_of_nodes) {
 	const size_t TRIES = 1;
@@ -49,9 +49,27 @@ template <class Model> void simulate(double t_max, size_t no_of_nodes) {
 
 int main(int argc, char **argv)
 {	
-	long seed = 12312;//std::stol(argv[1]);
-	simulate<BinaryTree<double>>(10, 20);
-	simulate<BinaryTree<double>>(50, 20);
+	if (argc != 3) {
+		return -1;
+	}
+	long seed = std::stol(argv[1]);
+	N_DEFINITION = std::stoi(argv[2]);
+
+
+	{
+		N_DEFINITION = 0;
+		simulate<ListModel<double>>(50, 20);
+	}
+	{
+		N_DEFINITION = 1;
+		simulate<ListModel<double>>(50, 20);
+	}
+	{
+		N_DEFINITION = 2;
+		simulate<ListModel<double>>(50, 20);
+	}
+	//simulate<BinaryTree<double>>(10, 20);
+	//simulate<BinaryTree<double>>(50, 20);
 	/*
 	simulate<ListModel<double>>(10, 20);
 	simulate<ListModel<double>>(50, 20);

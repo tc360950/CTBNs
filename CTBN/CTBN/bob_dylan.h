@@ -7,6 +7,7 @@
 #include "solvers/admm_solver.h"
 #include "models/model_data.h"
 #include "utils/result.h"
+#include "utils/parameters.h"
 
 template <class Real_t, class Model> class BobDylan {
 private:
@@ -30,7 +31,15 @@ private:
 		return non_zero_entries;
 	}
 
-	Result<Real_t> solve(const Real_t number_of_nodes, ADMMSolver<Real_t> &solver, const Real_t number_of_jumps, const size_t node, const size_t past_node_value) const {
+	Result<Real_t> solve(const Real_t number_of_nodes, ADMMSolver<Real_t> &solver, const Real_t total_number_of_jumps,
+		const size_t node, const size_t past_node_value, const TransitionRepository<Real_t> transition_repository) const {
+		Real_t number_of_jumps = total_number_of_jumps;
+		if (N_DEFINITION == 1) {
+			number_of_jumps = transition_repository.fetch_node_transitions(node, past_node_value).number_of_jumps_from_node_value;
+		}
+		else if (N_DEFINITION == 2) {
+			number_of_jumps = transition_repository.fetch_node_transitions(node, past_node_value).number_of_value_changing_jumps;
+		}
 		std::vector<Real_t> best_so_far;
 		Real_t best_so_far_score = 0.0;
 		bool best_set = false;
@@ -106,7 +115,7 @@ public:
 				const size_t end = th + 1 == this->NUM_THREADS ? 2 * node_count : start + data_per_thread;
 				for (size_t i = start; i < end; i++) {
 					const size_t node_value = i % 2;
-					auto result = this->solve(node_count, chain.first, chain.second.number_of_jumps, i / 2, node_value);
+					auto result = this->solve(node_count, chain.first, chain.second.number_of_jumps, i / 2, node_value, chain.second.transition_repository);
 					inference_result[i] = result;
 				}
 			});

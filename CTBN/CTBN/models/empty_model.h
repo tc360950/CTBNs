@@ -169,6 +169,11 @@ public:
 		for (auto &nt : node_transitions) {
 			nt.end_add(preferences.size());
 		}
+
+		for (size_t i = 0; i < 2 * preferences.size(); i++) {
+			node_transitions[i].gather_jump_information(i / 2, i % 2, skeleton);
+		}
+
 		return TransitionRepository<Real_t>{node_transitions, preferences.size(), preferences.size()};
 	}
 
