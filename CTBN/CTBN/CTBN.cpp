@@ -55,30 +55,8 @@ int main(int argc, char **argv)
 	long seed = std::stol(argv[1]);
 	N_DEFINITION = std::stoi(argv[2]);
 
-
-	{
-		N_DEFINITION = 0;
-		simulate<ListModel<double>>(50, 20);
-	}
-	{
-		N_DEFINITION = 1;
-		simulate<ListModel<double>>(50, 20);
-	}
-	{
-		N_DEFINITION = 2;
-		simulate<ListModel<double>>(50, 20);
-	}
-	//simulate<BinaryTree<double>>(10, 20);
-	//simulate<BinaryTree<double>>(50, 20);
-	/*
-	simulate<ListModel<double>>(10, 20);
-	simulate<ListModel<double>>(50, 20);
-	simulate<ListModel<double>>(50, 50);
-	simulate<ListModel<double>>(10, 50);
-
-	simulate<CorrelatedModelNoInteractions<double>>(10, 20);
-	simulate<CorrelatedModelNoInteractions<double>>(50, 20);
-	*/
+	simulate<CorrelatedModel<double>>(10, 20);
+	simulate<CorrelatedModel<double>>(50, 20);
 	
 	
 	/*ADMMSolverTest<double> admm_test;
