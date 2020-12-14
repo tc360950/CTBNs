@@ -25,6 +25,9 @@ public:
 		t_max{ t_max } {
 	}
 
+	Real_t get_t_max() const {
+		return this->t_max;
+	}
 	size_t get_parameters_size() const {
 		return transition_repository.get_parameters_size();
 	}
