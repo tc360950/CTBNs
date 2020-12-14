@@ -86,7 +86,14 @@ public:
 				for (size_t i = 0; i < z.size(); i++) {
 					if (std::abs(z[i] - z_2[i]) >= TOLERANCE) {
 						logTest<ADMMSolverTest>("Test fail at ", z[i], "vs", z_2[i]);
-						while (true) { std::cout << "dupa"; };
+						for (size_t u = 0; u < z.size(); u++) {
+							std::cout << z[u] << ";";
+						}
+						std::cout << "\n";
+						for (size_t u = 0; u < z2.size(); u++) {
+							std::cout << z2[u] << ";";
+						}
+						while (true) {  };
 						ok = false;
 					}
 				}

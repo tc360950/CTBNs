@@ -68,11 +68,13 @@ void test(long seed) {
 
 int main(int argc, char **argv)
 {	
-	if (argc != 3) {
+	/*if (argc != 3) {
 		return -1;
-	}
-	long seed = std::stol(argv[1]);
-	N_DEFINITION = std::stoi(argv[2]);
+	}*/
+	//long seed = std::stol(argv[1]);
+	//N_DEFINITION = std::stoi(argv[2]);
+	long seed = 21435423;
+	N_DEFINITION = 0;
 	//test(seed);
 	//simulate<ListModel<double>>(10, 20);
 	//simulate<ListModel<double>>(50, 20);
