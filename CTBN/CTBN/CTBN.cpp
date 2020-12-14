@@ -76,11 +76,55 @@ int main(int argc, char **argv)
 	//long seed = 21435423;
 	//N_DEFINITION = 0;
 	//test(seed);
-	//simulate<ListModel<double>>(10, 20);
-	//simulate<ListModel<double>>(50, 20);
-	test(seed);
-	/*
-	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	//test(seed);
+
+
+	{N_DEFINITION = 0;
+		simulate<ListModel<double>>(10, 20);
+		simulate<ListModel<double>>(50, 20);
+		simulate<CorrelatedModelNoInteractions<double>>(10, 20);
+		simulate<CorrelatedModelNoInteractions<double>>(50, 20);
+		simulate<CorrelatedModel<double>>(10, 20);
+		simulate<CorrelatedModel<double>>(50, 20);
+		simulate<BinaryTree<double>>(10, 20);
+		simulate<BinaryTree<double>>(50, 20);
+	}
+	std::cout << "STOP\n\n\n\n";
+	{N_DEFINITION = 1;
+	simulate<ListModel<double>>(10, 20);
+	simulate<ListModel<double>>(50, 20);
+	simulate<CorrelatedModelNoInteractions<double>>(10, 20);
+	simulate<CorrelatedModelNoInteractions<double>>(50, 20);
+	simulate<CorrelatedModel<double>>(10, 20);
+	simulate<CorrelatedModel<double>>(50, 20);
+	simulate<BinaryTree<double>>(10, 20);
+	simulate<BinaryTree<double>>(50, 20);
+	}
+	std::cout << "STOP\n\n\n\n";
+	{N_DEFINITION = 2;
+	simulate<ListModel<double>>(10, 20);
+	simulate<ListModel<double>>(50, 20);
+	simulate<CorrelatedModelNoInteractions<double>>(10, 20);
+	simulate<CorrelatedModelNoInteractions<double>>(50, 20);
+	simulate<CorrelatedModel<double>>(10, 20);
+	simulate<CorrelatedModel<double>>(50, 20);
+	simulate<BinaryTree<double>>(10, 20);
+	simulate<BinaryTree<double>>(50, 20);
+	}
+	std::cout << "STOP\n\n\n\n";
+	{N_DEFINITION = 3;
+	simulate<ListModel<double>>(10, 20);
+	simulate<ListModel<double>>(50, 20);
+	simulate<CorrelatedModelNoInteractions<double>>(10, 20);
+	simulate<CorrelatedModelNoInteractions<double>>(50, 20);
+	simulate<CorrelatedModel<double>>(10, 20);
+	simulate<CorrelatedModel<double>>(50, 20);
+	simulate<BinaryTree<double>>(10, 20);
+	simulate<BinaryTree<double>>(50, 20);
+	}
+	std::cout << "STOP\n\n\n\n";
+
+/*	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	BobDylan<double, CorrelatedModelNoInteractions<double>> bob;
 	auto result = bob.simulate(20, seed, 50);
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

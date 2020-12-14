@@ -15,7 +15,7 @@ public:
 	const size_t L2_ITERATIONS = 10;
 	Real_t L2_STEP_SIZE = 0.01;
 	const Real_t EPSILON = 0.000000001;
-	const Real_t STOPPING_EPSILON = 0.0001;
+	const Real_t STOPPING_EPSILON = 0.001;
 	const Real_t MOMENTUM_GAMMA = 0.9;
 
 	void update_x(const std::vector<Real_t> &u, const std::vector<Real_t> &z, std::vector<Real_t> &x, const size_t node, const size_t past_node_value, std::vector<Real_t> &gradient_holder) {
