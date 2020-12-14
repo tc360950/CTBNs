@@ -214,7 +214,16 @@ private:
 		auto bit = distrib(generator);
 		return  bit == 1 ? true : false;
 	}
-
+	public:
+		std::pair<ModelData<Real_t>, std::vector<std::pair<State, Real_t>>> sample_chain_and_skeleton(Real_t t_max) {
+			auto starting_state = simulate_starting_state();
+			auto skeleton = simulate(t_max, starting_state);
+			log("Simulated skeleton for list model of size ", skeleton.size());
+			auto transitions = convert_skeleton_to_transition_repository(skeleton, t_max);
+			log("Converted skeleton to transition repository");
+			auto dependence_structure = generate_dependence_structure();
+			return std::make_pair(ModelData<Real_t>(transitions, skeleton.size(), dependence_structure), skeleton);
+		}
 public:
 	CorrelatedModelNoInteractions<Real_t>(size_t number_of_nodes, long seed) :
 		generator{ seed } {
