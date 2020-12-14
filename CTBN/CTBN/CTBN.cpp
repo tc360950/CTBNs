@@ -51,7 +51,7 @@ void test(long seed) {
 	{ADMMSolverTest<double, ListModel<double>> admm_test;
 
 	LikelihoodTest<double, ListModel<double>> tester;
-	for (size_t i = 0; i < 20; i++) {
+	for (size_t i = 0; i < 10; i++) {
 		admm_test.test(seed, 0.1);
 		tester.random_test(seed);
 		seed++;
@@ -59,7 +59,7 @@ void test(long seed) {
 	{ADMMSolverTest<double, CorrelatedModelNoInteractions<double>> admm_test;
 
 	LikelihoodTest<double, CorrelatedModelNoInteractions<double>> tester;
-	for (size_t i = 0; i < 20; i++) {
+	for (size_t i = 0; i < 10; i++) {
 		admm_test.test(seed, 0.1);
 		tester.random_test(seed);
 		seed++;
