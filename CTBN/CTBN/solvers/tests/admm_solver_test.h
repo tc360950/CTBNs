@@ -83,18 +83,17 @@ public:
 				std::cout << "ADMM solver test start\n";
 				auto z_2 = solve(calculator, node, value, lambda);
 				std::cout << "ADMM solver test end\n";
+				Real_t error = 0.0;
+				Real_t norm = 0.0;
 				for (size_t i = 0; i < z.size(); i++) {
-					if (std::abs(z[i] - z_2[i]) / std::abs(z[i]) >= TOLERANCE) {
-						logTest<ADMMSolverTest>("Test fail at ", z[i], "vs", z_2[i]);
-						for (size_t u = 0; u < z.size(); u++) {
-							std::cout << z[u] << ";";
-						}
-						std::cout << "\n";
-						for (size_t u = 0; u < z_2.size(); u++) {
-							std::cout << z_2[u] << ";";
-						}
-						while (true) {  };
-						ok = false;
+					error += std::abs(z[i] - z_2[i]);
+					norm += std::abs(z[i]);
+				}
+				std::cout << "Total error: " << error << " norm " << norm << "\n";
+				if (error / norm >= TOLERANCE) {
+					logTest<ADMMSolverTest>("Test fail!");
+					while (true) {
+
 					}
 				}
 			}
