@@ -11,7 +11,7 @@ private:
 	const size_t NUMBER_OF_NODES = 20;
 	const long SEED = 213141;
 	const Real_t T_MAX = 50.0;
-	const Real_t TOLERANCE = 0.01;
+	const Real_t TOLERANCE = 0.1;
 	const size_t NUMBER_OF_TESTS = 5;
 	std::mt19937 generator{ SEED };
 
@@ -84,7 +84,7 @@ public:
 				auto z_2 = solve(calculator, node, value, lambda);
 				std::cout << "ADMM solver test end\n";
 				for (size_t i = 0; i < z.size(); i++) {
-					if (std::abs(z[i] - z_2[i]) >= TOLERANCE) {
+					if (std::abs(z[i] - z_2[i]) / std::abs(z[i]) >= TOLERANCE) {
 						logTest<ADMMSolverTest>("Test fail at ", z[i], "vs", z_2[i]);
 						for (size_t u = 0; u < z.size(); u++) {
 							std::cout << z[u] << ";";
