@@ -12,7 +12,7 @@ private:
 	const long SEED = 213141;
 	const Real_t T_MAX = 50.0;
 	const Real_t TOLERANCE = 0.01;
-	const size_t NUMBER_OF_TESTS = 20;
+	const size_t NUMBER_OF_TESTS = 5;
 	std::mt19937 generator{ SEED };
 
 	std::vector<Real_t> get_starting_x(const size_t vector_size) {
@@ -80,11 +80,13 @@ public:
 			auto z = solve(calculator, node, value, lambda);
 			bool ok = true;
 			for (size_t t = 0; t < NUMBER_OF_TESTS; t++) {
+				std::cout << "ADMM solver test start\n";
 				auto z_2 = solve(calculator, node, value, lambda);
+				std::cout << "ADMM solver test end\n";
 				for (size_t i = 0; i < z.size(); i++) {
 					if (std::abs(z[i] - z_2[i]) >= TOLERANCE) {
 						logTest<ADMMSolverTest>("Test fail at ", z[i], "vs", z_2[i]);
-						while (true) {};
+						while (true) { std::cout << "dupa"; };
 						ok = false;
 					}
 				}

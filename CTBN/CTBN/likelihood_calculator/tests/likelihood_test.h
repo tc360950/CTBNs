@@ -47,7 +47,7 @@ public:
 			auto likelihood_2 = tester.calculate_likelihood(beta, model_data.second, node, value);
 			if (std::abs(likelihood_1 - likelihood_2) >= TOLERANCE) {
 				logTest<LikelihoodTest>("Likelihood comparison fail with: ", likelihood_1, " ", likelihood_2);
-				while (true) {};
+				while (true) { std::cout << "dupa"; };
 			}
 			else {
 				logTest<LikelihoodTest>("Likelihood comparison ok with: ", likelihood_1, " ", likelihood_2);
@@ -65,7 +65,7 @@ public:
 			for (size_t c = 0; c < likelihood_gradient_2.size(); c++) {
 				if (std::abs(likelihood_gradient_1[c] - likelihood_gradient_2[c]) >= TOLERANCE) {
 					logTest<LikelihoodTest>("Likelihood comparison fail with: ", vector_to_string(likelihood_gradient_1), " ", vector_to_string(likelihood_gradient_2));
-					while (true) {};
+					while (true) { std::cout << "dupa"; };
 					ok = false;
 				}
 			}

@@ -49,18 +49,18 @@ template <class Model> void simulate(double t_max, size_t no_of_nodes) {
 
 void test(long seed) {
 	{ADMMSolverTest<double, ListModel<double>> admm_test;
-	admm_test.test(1243453, 0.1);
 
 	LikelihoodTest<double, ListModel<double>> tester;
 	for (size_t i = 0; i < 20; i++) {
+		admm_test.test(seed, 0.1);
 		tester.random_test(seed);
 		seed++;
 	}}
 	{ADMMSolverTest<double, CorrelatedModelNoInteractions<double>> admm_test;
-	admm_test.test(124341231253, 0.1);
 
 	LikelihoodTest<double, CorrelatedModelNoInteractions<double>> tester;
 	for (size_t i = 0; i < 20; i++) {
+		admm_test.test(seed, 0.1);
 		tester.random_test(seed);
 		seed++;
 	}}
