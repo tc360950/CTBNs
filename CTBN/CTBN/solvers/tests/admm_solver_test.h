@@ -90,8 +90,8 @@ public:
 							std::cout << z[u] << ";";
 						}
 						std::cout << "\n";
-						for (size_t u = 0; u < z2.size(); u++) {
-							std::cout << z2[u] << ";";
+						for (size_t u = 0; u < z_2.size(); u++) {
+							std::cout << z_2[u] << ";";
 						}
 						while (true) {  };
 						ok = false;
