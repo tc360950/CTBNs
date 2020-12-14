@@ -48,14 +48,22 @@ template <class Model> void simulate(double t_max, size_t no_of_nodes) {
 }
 
 void test(long seed) {
-	ADMMSolverTest<double, ListModel<double>> admm_test;
+	{ADMMSolverTest<double, ListModel<double>> admm_test;
 	admm_test.test(1243453, 0.1);
 
 	LikelihoodTest<double, ListModel<double>> tester;
 	for (size_t i = 0; i < 20; i++) {
 		tester.random_test(seed);
 		seed++;
-	}
+	}}
+	{ADMMSolverTest<double, CorrelatedModelNoInteractions<double>> admm_test;
+	admm_test.test(124341231253, 0.1);
+
+	LikelihoodTest<double, CorrelatedModelNoInteractions<double>> tester;
+	for (size_t i = 0; i < 20; i++) {
+		tester.random_test(seed);
+		seed++;
+	}}
 }
 
 int main(int argc, char **argv)
@@ -66,9 +74,9 @@ int main(int argc, char **argv)
 	long seed = std::stol(argv[1]);
 	N_DEFINITION = std::stoi(argv[2]);
 	//test(seed);
-	simulate<ListModel<double>>(10, 20);
-	simulate<ListModel<double>>(50, 20);
-
+	//simulate<ListModel<double>>(10, 20);
+	//simulate<ListModel<double>>(50, 20);
+	test(seed);
 	/*
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	BobDylan<double, CorrelatedModelNoInteractions<double>> bob;
