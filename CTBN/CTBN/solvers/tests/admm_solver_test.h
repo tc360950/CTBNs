@@ -5,14 +5,14 @@
 #include "../admm_solver.h"
 #include "../../utils/logger.h"
 
-template <class Real_t> class ADMMSolverTest {
+template <class Real_t, class Model> class ADMMSolverTest {
 
 private:
 	const size_t NUMBER_OF_NODES = 20;
 	const long SEED = 213141;
 	const Real_t T_MAX = 50.0;
 	const Real_t TOLERANCE = 0.01;
-	const size_t NUMBER_OF_TESTS = 5;
+	const size_t NUMBER_OF_TESTS = 20;
 	std::mt19937 generator{ SEED };
 
 	std::vector<Real_t> get_starting_x(const size_t vector_size) {
@@ -71,7 +71,7 @@ private:
 
 public:
 	void test(long seed, Real_t lambda) {
-		EmptyModel<Real_t> model{ NUMBER_OF_NODES, seed };
+		Model model{ NUMBER_OF_NODES, seed };
 		auto model_data = model.sample_chain_and_skeleton(T_MAX);
 		LikelihoodCalculator<Real_t> calculator{ model_data.first.transition_repository, T_MAX };
 		for (size_t i = 0; i < 2 * NUMBER_OF_NODES; i++) {
@@ -84,6 +84,7 @@ public:
 				for (size_t i = 0; i < z.size(); i++) {
 					if (std::abs(z[i] - z_2[i]) >= TOLERANCE) {
 						logTest<ADMMSolverTest>("Test fail at ", z[i], "vs", z_2[i]);
+						while (true) {};
 						ok = false;
 					}
 				}

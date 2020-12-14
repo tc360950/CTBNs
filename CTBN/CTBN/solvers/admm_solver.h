@@ -133,6 +133,16 @@ public:
 public:
 	ADMMSolver<Real_t>(LikelihoodCalculator<Real_t> likelihood_calculator) :
 		likelihood_calculator{ likelihood_calculator } {}
+
+	Real_t get_max_lambda(const size_t node, const size_t past_node_value) {
+		std::vector<Real_t> x;
+		x.resize(likelihood_calculator.get_parameters_size());
+		std::fill(x.begin(), x.end(), 0.0);
+		std::vector<Real_t> gradient_at_zero(x.begin(), x.end());
+		likelihood_calculator.calculate_likelihood_gradient(x, node, past_node_value, gradient_at_zero);
+		return get_vector_l2_norm(gradient_at_zero);
+	}
+
 	// pierwszy element return to beta, drugi n * lik trzeci ||beta||
 	std::tuple<std::vector<Real_t>, Real_t, Real_t> solve(const size_t iterations, const size_t node, const size_t past_node_value, const Real_t lambda) {
 		std::vector<Real_t> x = get_starting_x(likelihood_calculator.get_parameters_size());

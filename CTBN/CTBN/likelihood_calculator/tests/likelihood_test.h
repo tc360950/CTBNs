@@ -7,7 +7,7 @@
 #include "../likelihood_calculator.h"
 #include "../../utils/logger.h"
 
-template <class Real_t> class LikelihoodTest {
+template <class Real_t, class Model> class LikelihoodTest {
 private:
 	const size_t NUMBER_OF_NODES = 20;
 	const long SEED = 213141;
@@ -35,7 +35,7 @@ public:
 
 	void random_test(long model_seed) {
 		logTest<LikelihoodTest>("Starting likelihood test");
-		EmptyModel<Real_t> model{ 20, model_seed };
+		Model model{ 20, model_seed };
 		auto model_data = model.sample_chain_and_skeleton(T_MAX);
 		LikelihoodCalculator<Real_t> calculator{ model_data.first.transition_repository, T_MAX };
 		LikelihoodTester<Real_t> tester{ NUMBER_OF_NODES, T_MAX };
@@ -47,6 +47,7 @@ public:
 			auto likelihood_2 = tester.calculate_likelihood(beta, model_data.second, node, value);
 			if (std::abs(likelihood_1 - likelihood_2) >= TOLERANCE) {
 				logTest<LikelihoodTest>("Likelihood comparison fail with: ", likelihood_1, " ", likelihood_2);
+				while (true) {};
 			}
 			else {
 				logTest<LikelihoodTest>("Likelihood comparison ok with: ", likelihood_1, " ", likelihood_2);
@@ -64,6 +65,7 @@ public:
 			for (size_t c = 0; c < likelihood_gradient_2.size(); c++) {
 				if (std::abs(likelihood_gradient_1[c] - likelihood_gradient_2[c]) >= TOLERANCE) {
 					logTest<LikelihoodTest>("Likelihood comparison fail with: ", vector_to_string(likelihood_gradient_1), " ", vector_to_string(likelihood_gradient_2));
+					while (true) {};
 					ok = false;
 				}
 			}

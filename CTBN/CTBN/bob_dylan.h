@@ -13,8 +13,6 @@ template <class Real_t, class Model> class BobDylan {
 private:
 	const size_t NUM_THREADS = 1;
 	const size_t SOLVER_ITERATIONS = 10;
-	const Real_t MAX_LAMBDA = 100000.0;
-	const size_t LAMBDA_COUNT = 30;
 	Real_t time_max_local;
 
 	Real_t prune(const std::vector<Real_t> &vector, const Real_t delta, std::vector<Real_t> &result_place_holder) const {
@@ -31,6 +29,21 @@ private:
 		return non_zero_entries;
 	}
 
+	std::vector<Real_t> get_lambda_sequence(const Real_t max_lambda) const {
+		Real_t log_max_lambda = std::log(max_lambda);
+		Real_t log_min_lambda = std::log(max_lambda) + std::log(0.0001);
+		Real_t diff = (log_max_lambda - log_min_lambda) / 100;
+		std::vector<Real_t> result; 
+		result.push_back(max_lambda);
+		Real_t curr_lambda = log_max_lambda;
+		for (size_t i = 0; i < 99; i++) {
+			curr_lambda -= diff;
+			result.push_back(std::exp(curr_lambda));
+		}
+		return result;
+	}
+
+
 	Result<Real_t> solve(const Real_t number_of_nodes, ADMMSolver<Real_t> &solver, const Real_t total_number_of_jumps,
 		const size_t node, const size_t past_node_value, const TransitionRepository<Real_t> transition_repository) const {
 		Real_t number_of_jumps = total_number_of_jumps;
@@ -40,19 +53,19 @@ private:
 		else if (N_DEFINITION == 2) {
 			number_of_jumps = transition_repository.fetch_node_transitions(node, past_node_value).number_of_value_changing_jumps;
 		}
+		std::vector<Real_t> lambdas = get_lambda_sequence(solver.get_max_lambda(node, past_node_value));
+	
 		std::vector<Real_t> best_so_far;
 		Real_t best_so_far_score = 0.0;
 		bool best_set = false;
-		Real_t lambda = MAX_LAMBDA;
-		for (size_t i = 0; i < LAMBDA_COUNT; i++) {
-			auto result = solver.solve(SOLVER_ITERATIONS, node, past_node_value, lambda);
+		for (size_t i = 0; i < lambdas.size(); i++) {
+			auto result = solver.solve(SOLVER_ITERATIONS, node, past_node_value, lambdas[i]);
 			Real_t score = std::get<1>(result) + std::log(number_of_jumps) * std::get<2>(result) / time_max_local;
 			if (!best_set || score < best_so_far_score) {
 				best_set = true;
 				best_so_far_score = score;
 				best_so_far = std::get<0>(result);
 			}
-			lambda = lambda * 0.5;
 		}
 		if (DEBUG) {
             log("Choosing best delta for node, value pair: ", node, " ", past_node_value);
