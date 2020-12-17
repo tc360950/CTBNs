@@ -20,10 +20,10 @@
 #include "models/det_binary_tree.h"
 #include "utils/parameters.h"
 
-template <class Model> void simulate(double t_max, size_t no_of_nodes) {
-	const size_t TRIES = 25;
+template <class Model> void simulate(double t_max, size_t no_of_nodes, const std::string NAME) {
+	const size_t TRIES = 50;
 	std::vector<Statistics<double>> results;
-	results.resize(TRIES);
+	results.resize(2*TRIES);
 	std::vector<std::thread> threads;
 	std::srand(std::time(nullptr));
 
@@ -41,10 +41,27 @@ template <class Model> void simulate(double t_max, size_t no_of_nodes) {
 	{
 		th.join();
 	}
-	for (size_t i = 1; i < TRIES; i++) {
+	threads.clear();
+	for (size_t i = 0; i < TRIES; i++) {
+		auto seed = std::rand();
+		threads.emplace_back([t_max, no_of_nodes, seed, i, &results, TRIES] {
+			BobDylan<double, Model> bob;
+			StatisticsFactory<double, Model> factory;
+			auto result = bob.simulate(no_of_nodes, seed, t_max);
+			auto stats = factory.convert(no_of_nodes, t_max, result.model_data, result);
+			results[i + TRIES] = stats;
+		});
+	}
+	for (auto &th : threads)
+	{
+		th.join();
+	}
+
+
+	for (size_t i = 1; i < 2 * TRIES; i++) {
 		results[0].add(results[i]);
 	}
-	logTest<Model>("Results: \n", "FDR: ", results[0].FDR / TRIES, "\nMD: ", results[0].MD/ TRIES, "\nPOWER: ", results[0].power / TRIES);
+	logTest<Model>(NAME, " Results: \n", "FDR: ", results[0].FDR / (2* TRIES), "\nMD: ", results[0].MD/ (2* TRIES), "\nPOWER: ", results[0].power / (2* TRIES));
 }
 
 void test(long seed) {
@@ -80,47 +97,44 @@ int main(int argc, char **argv)
 
 
 	{N_DEFINITION = 0;
-		simulate<ListModel<double>>(10, 20);
-		simulate<ListModel<double>>(50, 20);
-		simulate<CorrelatedModelNoInteractions<double>>(10, 20);
-		simulate<CorrelatedModelNoInteractions<double>>(50, 20);
-		simulate<CorrelatedModel<double>>(10, 20);
-		simulate<CorrelatedModel<double>>(50, 20);
-		simulate<BinaryTree<double>>(10, 20);
-		simulate<BinaryTree<double>>(50, 20);
-	}
-	std::cout << "STOP\n\n\n\n";
-	{N_DEFINITION = 1;
-	simulate<ListModel<double>>(10, 20);
-	simulate<ListModel<double>>(50, 20);
-	simulate<CorrelatedModelNoInteractions<double>>(10, 20);
-	simulate<CorrelatedModelNoInteractions<double>>(50, 20);
-	simulate<CorrelatedModel<double>>(10, 20);
-	simulate<CorrelatedModel<double>>(50, 20);
-	simulate<BinaryTree<double>>(10, 20);
-	simulate<BinaryTree<double>>(50, 20);
-	}
-	std::cout << "STOP\n\n\n\n";
-	{N_DEFINITION = 2;
-	simulate<ListModel<double>>(10, 20);
-	simulate<ListModel<double>>(50, 20);
-	simulate<CorrelatedModelNoInteractions<double>>(10, 20);
-	simulate<CorrelatedModelNoInteractions<double>>(50, 20);
-	simulate<CorrelatedModel<double>>(10, 20);
-	simulate<CorrelatedModel<double>>(50, 20);
-	simulate<BinaryTree<double>>(10, 20);
-	simulate<BinaryTree<double>>(50, 20);
+		simulate<ListModel<double>>(10, 20, "10_20");
+		simulate<ListModel<double>>(50, 20, "50_20");
+		simulate<CorrelatedModelNoInteractions<double>>(10, 20, "10_20");
+		simulate<CorrelatedModelNoInteractions<double>>(50, 20, "50_20");
+		simulate<CorrelatedModel<double>>(10, 20, "10_20");
+		simulate<CorrelatedModel<double>>(50, 20, "50_20");
+		simulate<BinaryTree<double>>(10, 20, "10_20");
+		simulate<BinaryTree<double>>(50, 20, "50_20");
+
+		simulate<ListModel<double>>(10, 50, "10_50");
+		simulate<ListModel<double>>(50, 50, "50_50");
+		simulate<CorrelatedModelNoInteractions<double>>(10, 50, "10_50");
+		simulate<CorrelatedModelNoInteractions<double>>(50, 50, "50_50");
+		simulate<CorrelatedModel<double>>(10, 50, "10_50");
+		simulate<CorrelatedModel<double>>(50, 50, "50_50");
+		simulate<BinaryTree<double>>(10, 50, "10_50");
+		simulate<BinaryTree<double>>(50, 50, "50_50");
+
 	}
 	std::cout << "STOP\n\n\n\n";
 	{N_DEFINITION = 3;
-	simulate<ListModel<double>>(10, 20);
-	simulate<ListModel<double>>(50, 20);
-	simulate<CorrelatedModelNoInteractions<double>>(10, 20);
-	simulate<CorrelatedModelNoInteractions<double>>(50, 20);
-	simulate<CorrelatedModel<double>>(10, 20);
-	simulate<CorrelatedModel<double>>(50, 20);
-	simulate<BinaryTree<double>>(10, 20);
-	simulate<BinaryTree<double>>(50, 20);
+	simulate<ListModel<double>>(10, 20, "10_20");
+	simulate<ListModel<double>>(50, 20, "50_20");
+	simulate<CorrelatedModelNoInteractions<double>>(10, 20, "10_20");
+	simulate<CorrelatedModelNoInteractions<double>>(50, 20, "50_20");
+	simulate<CorrelatedModel<double>>(10, 20, "10_20");
+	simulate<CorrelatedModel<double>>(50, 20, "50_20");
+	simulate<BinaryTree<double>>(10, 20, "10_20");
+	simulate<BinaryTree<double>>(50, 20, "50_20");
+
+	simulate<ListModel<double>>(10, 50, "10_50");
+	simulate<ListModel<double>>(50, 50, "50_50");
+	simulate<CorrelatedModelNoInteractions<double>>(10, 50, "10_50");
+	simulate<CorrelatedModelNoInteractions<double>>(50, 50, "50_50");
+	simulate<CorrelatedModel<double>>(10, 50, "10_50");
+	simulate<CorrelatedModel<double>>(50, 50, "50_50");
+	simulate<BinaryTree<double>>(10, 50, "10_50");
+	simulate<BinaryTree<double>>(50, 50, "50_50");
 	}
 	std::cout << "STOP\n\n\n\n";
 
