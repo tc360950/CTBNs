@@ -11,7 +11,7 @@
 
 template <class Real_t, class Model> class BobDylan {
 private:
-	const size_t NUM_THREADS = 1;
+	const size_t NUM_THREADS = 50;
 	const size_t SOLVER_ITERATIONS = 10;
 	Real_t time_max_local;
 
