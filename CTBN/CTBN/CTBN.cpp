@@ -64,6 +64,29 @@ template <class Model> void simulate(double t_max, size_t no_of_nodes, const std
 	logTest<Model>(NAME, " Results: \n", "FDR: ", results[0].FDR / (2* TRIES), "\nMD: ", results[0].MD/ (2* TRIES), "\nPOWER: ", results[0].power / (2* TRIES));
 }
 
+
+template <class Model> void simulate_memory(double t_max, size_t no_of_nodes, const std::string NAME) {
+	const size_t TRIES = 50;
+	std::vector<Statistics<double>> results;
+	results.resize(TRIES);
+	std::srand(std::time(nullptr));
+
+	for (size_t i = 0; i < TRIES; i++) {
+		auto seed = std::rand();
+		BobDylan<double, Model> bob;
+		StatisticsFactory<double, Model> factory;
+		auto result = bob.simulate(no_of_nodes, seed, t_max);
+		auto stats = factory.convert(no_of_nodes, t_max, result.model_data, result);
+		results[i] = stats;
+	}
+	for (size_t i = 1; i < TRIES; i++) {
+		results[0].add(results[i]);
+	}
+	logTest<Model>(NAME, " Results: \n", "FDR: ", results[0].FDR / (TRIES), "\nMD: ", results[0].MD/ ( TRIES), "\nPOWER: ", results[0].power / ( TRIES));
+}
+
+
+
 void test(long seed) {
 	{ADMMSolverTest<double, ListModel<double>> admm_test;
 
