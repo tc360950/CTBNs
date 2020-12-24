@@ -53,7 +53,7 @@ public:
 		for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
 			const Real_t exp_intensity = std::exp(get_intensity(beta, node_transitions.predictive_vectors, start_od_predictive));
 			for (size_t j = 0; j < beta.size(); j++) {
-				result[j] += node_transitions.predictive_vectors_times_occupation[start_od_predictive + j] * exp_intensity;
+				result[j] += node_transitions.predictive_vectors[start_od_predictive + j] * node_transitions.time_spent_in_state[i] * exp_intensity;
 			}
 			start_od_predictive += get_parameters_size();
 		}
