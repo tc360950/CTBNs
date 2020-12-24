@@ -8,7 +8,7 @@ template<class Real_t> class NodeTransitions {
 public:
 	std::vector<Real_t> state_counts;
 	std::vector<Real_t> time_spent_in_state;
-	std::vector<Real_t> predictive_vectors;
+	std::vector<bool> predictive_vectors;
 	/**
 	Pierwszy skladnik sumy, ktora oblicza gradient to suma n(c, s, s') * Z(c), w tym wektorze trzymamy te sume.
 	**/
@@ -23,7 +23,11 @@ public:
 		state_counts.push_back(count);
 		time_spent_in_state.push_back(time);
 		for (size_t i = 0; i < predictive.size(); i++) {
-			predictive_vectors.push_back(predictive[i]);
+			if (predictive[i] == 0.0) {
+				predictive_vectors.push_back(false);
+				} else {
+					predictive_vectors.push_back(true);
+				}
 		}
 	}
 

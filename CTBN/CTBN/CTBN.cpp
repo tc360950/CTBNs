@@ -66,7 +66,7 @@ template <class Model> void simulate(double t_max, size_t no_of_nodes, const std
 
 
 template <class Model> void simulate_memory(double t_max, size_t no_of_nodes, const std::string NAME) {
-	const size_t TRIES = 50;
+	const size_t TRIES = 25;
 	std::vector<Statistics<double>> results;
 	results.resize(TRIES);
 	std::srand(std::time(nullptr));

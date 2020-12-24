@@ -11,7 +11,7 @@ private:
 	TransitionRepository<Real_t> transition_repository;
 	const Real_t t_max;
 
-	inline Real_t get_intensity(const std::vector<Real_t> &beta, const std::vector<Real_t> &predictive, const size_t start) const {
+	inline Real_t get_intensity(const std::vector<Real_t> &beta, const std::vector<bool> &predictive, const size_t start) const {
 		Real_t result = 0;
 		for (size_t i = 0; i < beta.size(); i++) {
 			result += predictive[start + i] * beta[i];
