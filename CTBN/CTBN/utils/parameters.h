@@ -3,6 +3,6 @@
 
 
 extern int N_DEFINITION;
-extern size_t NUM_THREADS;
+extern int NUM_THREADS;
 #define MEMORY_HUNGRY 
 #endif // !PARAMETERS_H
