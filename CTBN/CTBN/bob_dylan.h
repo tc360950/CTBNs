@@ -129,7 +129,7 @@ public:
 		std::vector<std::thread> threads;
 		const size_t data_per_thread = 2 * node_count / NUM_THREADS;
 		for (int th = 0; th < NUM_THREADS; th++) {
-			threads.emplace_back([this, th, data_per_thread, node_count, &chain, &inference_result, NUM_THREADS] { 
+			threads.emplace_back([this, th, data_per_thread, node_count, &chain, &inference_result] { 
 				const size_t start = data_per_thread * th;
 				const size_t end = th + 1 == NUM_THREADS ? 2 * node_count : start + data_per_thread;
 				for (size_t i = start; i < end; i++) {
