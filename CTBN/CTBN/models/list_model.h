@@ -24,7 +24,6 @@ private:
 	}
 
 	std::vector<std::pair<State, Real_t>> simulate(Real_t t_max, const State &starting_state) {
-		//stan + czas skoku do stanu 
 		std::vector<std::pair<State, Real_t>> skeleton; 
 		skeleton.push_back(std::make_pair(starting_state, 0.0));
 		while (skeleton.back().second <= t_max) {
@@ -89,7 +88,6 @@ private:
 		return 0.0;
 	}
 
-	//TODO mozna zoptymalizowac przy pomocy move semantics, jezeli bedzie za wole
 	TransitionRepository<Real_t> convert_skeleton_to_transition_repository(const std::vector<std::pair<State, Real_t>> &skeleton, const Real_t t_max) const {
 		OccupationTimes<Real_t> occupation_times = extract_occupation_times(skeleton, t_max);
 		std::vector<NodeTransitions<Real_t>> node_transitions;
@@ -162,17 +160,21 @@ private:
 		return  bit == 1 ? true : false;
 	}
 public:
+	//for testing only
 	std::pair<ModelData<Real_t>, std::vector<std::pair<State, Real_t>>> sample_chain_and_skeleton(Real_t t_max) {
 		auto starting_state = simulate_starting_state();
 		auto skeleton = simulate(t_max, starting_state);
-		log("Simulated skeleton for list model of size ", skeleton.size());
+		if (DEBUG) {
+			log("Simulated skeleton for list model of size ", skeleton.size());
+		}
 		auto transitions = convert_skeleton_to_transition_repository(skeleton, t_max);
-		log("Converted skeleton to transition repository");
+		if (DEBUG) {
+			log("Converted skeleton to transition repository");
+		}
 		auto dependence_structure = generate_dependence_structure();
 		return std::make_pair(ModelData<Real_t>(transitions, skeleton.size(), dependence_structure), skeleton);
 	}
 
-public:
 	ListModel<Real_t>(size_t number_of_nodes, long seed): 
 		generator{ seed } {
 		preferences.resize(number_of_nodes);
@@ -184,9 +186,13 @@ public:
 	ModelData<Real_t> sample_chain(Real_t t_max) {
 		auto starting_state = simulate_starting_state();
 		auto skeleton = simulate(t_max, starting_state);
-		//log("Simulated skeleton for list model of size ", skeleton.size());
+		if (DEBUG) {
+			log("Simulated skeleton for list model of size ", skeleton.size());
+		}
 		auto transitions = convert_skeleton_to_transition_repository(skeleton, t_max);
-		//log("Converted skeleton to transition repository");
+		if (DEBUG) {
+			log("Converted skeleton to transition repository");
+		}
 		auto dependence_structure = generate_dependence_structure();
 		return ModelData<Real_t>(transitions, skeleton.size(), dependence_structure);
 	}

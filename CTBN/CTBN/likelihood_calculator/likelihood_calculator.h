@@ -32,37 +32,71 @@ public:
 		return transition_repository.get_parameters_size();
 	}
 
-	Real_t calculate_likelihood(const std::vector<Real_t> &beta, size_t node, bool past_node_value) {
-		Real_t result = 0.0;
-		size_t start_od_predictive = 0;
-		const NodeTransitions<Real_t> &node_transitions = transition_repository.fetch_node_transitions(node, past_node_value);
-		for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
-			const Real_t intensity = get_intensity(beta, node_transitions.predictive_vectors, start_od_predictive);
-			const Real_t multiplier = -node_transitions.state_counts[i] * intensity
-				+ std::exp(intensity) * node_transitions.time_spent_in_state[i];
-			result += multiplier;
-			start_od_predictive += get_parameters_size();
-		}
-		return result / t_max;
-	}
-
-	void calculate_likelihood_gradient(const std::vector<Real_t> &beta, size_t node, size_t past_node_value, std::vector<Real_t> &result) {
-		size_t start_od_predictive = 0;
-		std::fill(result.begin(), result.end(), 0.0);
-		const NodeTransitions<Real_t> &node_transitions = transition_repository.fetch_node_transitions(node, past_node_value);
-		for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
-			const Real_t exp_intensity = std::exp(get_intensity(beta, node_transitions.predictive_vectors, start_od_predictive));
-			for (size_t j = 0; j < beta.size(); j++) {
-				result[j] += node_transitions.predictive_vectors_times_occupation[start_od_predictive + j] * exp_intensity;
+	#ifdef MEMORY_HUNGRY
+		Real_t calculate_likelihood(const std::vector<Real_t> &beta, size_t node, bool past_node_value) {
+			Real_t result = 0.0;
+			size_t start_od_predictive = 0;
+			const NodeTransitions<Real_t> &node_transitions = transition_repository.fetch_node_transitions(node, past_node_value);
+			for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
+				const Real_t intensity = get_intensity(beta, node_transitions.predictive_vectors, start_od_predictive);
+				const Real_t multiplier = -node_transitions.state_counts[i] * intensity
+					+ std::exp(intensity) * node_transitions.time_spent_in_state[i];
+				result += multiplier;
+				start_od_predictive += get_parameters_size();
 			}
-			start_od_predictive += get_parameters_size();
+			return result / t_max;
 		}
-		std::transform(result.begin(), result.end(), node_transitions.sum_counts_times_predictive.begin(),
-			result.begin(), std::plus<Real_t>());
-		for (size_t j = 0; j < beta.size(); j++) {
-			result[j] = result[j] / t_max;
+
+		void calculate_likelihood_gradient(const std::vector<Real_t> &beta, size_t node, size_t past_node_value, std::vector<Real_t> &result) {
+			size_t start_od_predictive = 0;
+			std::fill(result.begin(), result.end(), 0.0);
+			const NodeTransitions<Real_t> &node_transitions = transition_repository.fetch_node_transitions(node, past_node_value);
+			for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
+				const Real_t exp_intensity = std::exp(get_intensity(beta, node_transitions.predictive_vectors, start_od_predictive));
+				for (size_t j = 0; j < beta.size(); j++) {
+					result[j] += node_transitions.predictive_vectors_times_occupation[start_od_predictive + j] * exp_intensity;
+				}
+				start_od_predictive += get_parameters_size();
+			}
+			std::transform(result.begin(), result.end(), node_transitions.sum_counts_times_predictive.begin(),
+				result.begin(), std::plus<Real_t>());
+			for (size_t j = 0; j < beta.size(); j++) {
+				result[j] = result[j] / t_max;
+			}
 		}
-	}
+	#else
+		Real_t calculate_likelihood(const std::vector<Real_t> &beta, size_t node, bool past_node_value) {
+			Real_t result = 0.0;
+			size_t start_od_predictive = 0;
+			const NodeTransitions<Real_t> &node_transitions = transition_repository.fetch_node_transitions(node, past_node_value);
+			for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
+				const Real_t intensity = get_intensity(beta, node_transitions.predictive_vectors, start_od_predictive);
+				const Real_t multiplier = -node_transitions.state_counts[i] * intensity
+					+ std::exp(intensity) * node_transitions.time_spent_in_state[i];
+				result += multiplier;
+				start_od_predictive += get_parameters_size();
+			}
+			return result / t_max;
+		}
+
+		void calculate_likelihood_gradient(const std::vector<Real_t> &beta, size_t node, size_t past_node_value, std::vector<Real_t> &result) {
+			size_t start_od_predictive = 0;
+			std::fill(result.begin(), result.end(), 0.0);
+			const NodeTransitions<Real_t> &node_transitions = transition_repository.fetch_node_transitions(node, past_node_value);
+			for (size_t i = 0; i < node_transitions.state_counts.size(); i++) {
+				const Real_t exp_intensity = std::exp(get_intensity(beta, node_transitions.predictive_vectors, start_od_predictive));
+				for (size_t j = 0; j < beta.size(); j++) {
+					result[j] += node_transitions.predictive_vectors[start_od_predictive + j] * node_transitions.time_spent_in_state[i] * exp_intensity;
+				}
+				start_od_predictive += get_parameters_size();
+			}
+			std::transform(result.begin(), result.end(), node_transitions.sum_counts_times_predictive.begin(),
+				result.begin(), std::plus<Real_t>());
+			for (size_t j = 0; j < beta.size(); j++) {
+				result[j] = result[j] / t_max;
+			}
+		}
+	#endif // MEMORY_HUNGRY
 };
 
 

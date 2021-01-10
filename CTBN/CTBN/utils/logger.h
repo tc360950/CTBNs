@@ -14,7 +14,7 @@ constexpr bool DEBUG = false;
 constexpr bool TEST = false;
 
 /**
-* Set this to <code>true</code> if debug information should be printed during sampling\n
+* Set this to <code>true</code> if debug information should be printed\n
 * Logging is by default directed to the standard output but its quite easy to modify this code and
 * redirect the output.
 */

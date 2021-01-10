@@ -7,7 +7,6 @@
 
 template <class Real_t> class TransitionRepository {
 private:
-	//pod indeksem i tranzycje i/2-tego wierzchola ze stanu i % 2
 	std::vector<NodeTransitions<Real_t>> node_transitions;
 	const size_t number_of_nodes;
 	const size_t parameters_size;

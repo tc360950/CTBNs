@@ -40,7 +40,6 @@ public:
 			}
 			counter++;
 		}
-		//std::cout << counter << "\n";
 	}
 
 	void update_z(const std::vector<Real_t> &u, const std::vector<Real_t> &x, std::vector<Real_t> &z, const Real_t lambda) {
@@ -127,7 +126,6 @@ public:
 		const std::vector<Real_t> &old_z) const {
 		Real_t e_primal = std::sqrt(x.size()) * STOPPING_EPSILON + STOPPING_EPSILON * std::max(get_vector_l2_norm(x), get_vector_l2_norm(z));
 		Real_t e_dual = std::sqrt(x.size()) * STOPPING_EPSILON;
-		//std::cout << "Dupa1: " << difference_norm(z, old_z) << " dupa2: " << difference_norm(u, old_u) << "\n";
 		return e_primal >= difference_norm(u, old_u) && e_dual >= RO * difference_norm(z, old_z);
 	}
 public:
@@ -143,7 +141,6 @@ public:
 		return get_vector_l2_norm(gradient_at_zero);
 	}
 
-	// pierwszy element return to beta, drugi n * lik trzeci ||beta||
 	std::tuple<std::vector<Real_t>, Real_t, Real_t> solve(const size_t iterations, const size_t node, const size_t past_node_value, const Real_t lambda) {
 		std::vector<Real_t> x = get_starting_x(likelihood_calculator.get_parameters_size());
 		std::vector<Real_t> z = get_starting_z(likelihood_calculator.get_parameters_size());

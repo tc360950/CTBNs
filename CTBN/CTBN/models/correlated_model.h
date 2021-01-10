@@ -247,9 +247,7 @@ public:
 	ModelData<Real_t> sample_chain(Real_t t_max) {
 		auto starting_state = simulate_starting_state();
 		auto skeleton = simulate(t_max, starting_state);
-		//log("Simulated skeleton for list model of size ", skeleton.size());
 		auto transitions = convert_skeleton_to_transition_repository(skeleton, t_max);
-		//log("Converted skeleton to transition repository");
 		auto dependence_structure = generate_dependence_structure();
 		return ModelData<Real_t>(transitions, skeleton.size(), dependence_structure);
 	}
