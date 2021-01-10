@@ -112,7 +112,7 @@ private:
         }
 		return Result<Real_t>{ best_prunned_so_far, node, past_node_value };
 	}
-	//solver, number of jumps, dependence matrix
+
 	std::pair<ADMMSolver<Real_t>, ModelData<Real_t>> sample_chain(const size_t node_count, const long seed, const Real_t t_max) const {
 		Model model{ node_count, seed };
 		auto model_data = model.sample_chain(t_max);
@@ -129,9 +129,9 @@ public:
 		std::vector<std::thread> threads;
 		const size_t data_per_thread = 2 * node_count / NUM_THREADS;
 		for (int th = 0; th < NUM_THREADS; th++) {
-			threads.emplace_back([this, th, data_per_thread, node_count, &chain, &inference_result] { 
+			threads.emplace_back([this, th, data_per_thread, node_count, &chain, &inference_result, NUM_THREADS] { 
 				const size_t start = data_per_thread * th;
-				const size_t end = th + 1 == this->NUM_THREADS ? 2 * node_count : start + data_per_thread;
+				const size_t end = th + 1 == NUM_THREADS ? 2 * node_count : start + data_per_thread;
 				for (size_t i = start; i < end; i++) {
 					const size_t node_value = i % 2;
 					auto result = this->solve(node_count, chain.first, chain.second.number_of_jumps, i / 2, node_value, chain.second.transition_repository);
