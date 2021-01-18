@@ -35,7 +35,7 @@ public:
 	}
 
 	static Transition create_from_states(const State &old_state, const State &new_state) {
-		size_t changing_node;
+		size_t changing_node = 0;
 		for (size_t i = 0; i < old_state.get_size(); i++) {
 			if (old_state.get_node_value(i) != new_state.get_node_value(i)) {
 				changing_node = i;
