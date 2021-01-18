@@ -5,7 +5,7 @@
 #include <ctime>
 
 #include "CTBN.h"
-#include "bob_dylan.h"
+#include "sampling_coordinator.h"
 #include "models/list_model.h"
 #include "models/correlated_model.h"
 #include "summary_statistics/statistics_factory.h"
@@ -62,7 +62,7 @@ void test(long seed) {
 	}
 }
 
-int main(int argc, char **argv)
+int main()
 {	
 	simulate_memory<ListModel<double>>(10, 20, "10_20");
 	simulate_memory<ListModel<double>>(50, 20, "50_20");
