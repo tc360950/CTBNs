@@ -5,7 +5,7 @@
 
 #include "statistics.h"
 #include "../models/model_data.h"
-#include "../bob_dylan.h"
+#include "../sampling_coordinator.h"
 #include "../utils/result.h"
 #include "../models/correlated_model.h"
 
