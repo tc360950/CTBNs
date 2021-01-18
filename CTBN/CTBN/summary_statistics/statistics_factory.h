@@ -58,6 +58,7 @@ template <class Real_t, class Model> class StatisticsFactory {
 public:
 	Statistics<Real_t> convert(const size_t number_of_nodes, const Real_t time, ModelData<Real_t> model_data, SimulationResult<Real_t> simulation_result) {
 		auto inferred_edges = gather_edges(number_of_nodes, simulation_result);
+		auto real_edges = gather_real_edges(number_of_nodes, model_data);
 		auto power = calculate_power(inferred_edges, real_edges);
 		auto FDR = calculate_FDR(inferred_edges, real_edges);
 		Real_t MD = (Real_t)inferred_edges.size();
