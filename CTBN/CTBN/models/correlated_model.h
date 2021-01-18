@@ -10,7 +10,7 @@
 template <class Real_t> class CorrelatedModel {
 private:
 	std::mt19937 generator;
-	//tylko pierwsze 5 nodeow
+	//only first 5 nodes
 	std::vector<std::pair<size_t, size_t>> parents;
 	std::vector<bool> preferences;
 
@@ -23,7 +23,6 @@ private:
 	}
 
 	std::vector<std::pair<State, Real_t>> simulate(Real_t t_max, const State &starting_state) {
-		//stan + czas skoku do stanu 
 		std::vector<std::pair<State, Real_t>> skeleton;
 		skeleton.push_back(std::make_pair(starting_state, 0.0));
 		while (skeleton.back().second <= t_max) {
@@ -62,7 +61,7 @@ private:
 		}
 		else {
 			auto parent_product = state.get_node_value(parents[node].first) && state.get_node_value(parents[node].second);
-			if (state.get_node_value(node) == preferences[node]) {
+			if (node_value == preferences[node]) {
 				return parent_product ? 9.0 : 1.0;
 			}
 			else {
