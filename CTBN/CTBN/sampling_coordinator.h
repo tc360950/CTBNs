@@ -1,5 +1,5 @@
-#ifndef BOB_DYLAN_H
-#define BOB_DYLAN_H
+#ifndef S_COOR_H
+#define S_COOR_H
 #include <thread>
 #include <tuple>
 #include <string>
@@ -9,7 +9,7 @@
 #include "utils/result.h"
 #include "utils/parameters.h"
 
-template <class Real_t, class Model> class BobDylan {
+template <class Real_t, class Model> class SamplingCoordinator {
 private:
 	const size_t SOLVER_ITERATIONS = 10;
 	Real_t time_max_local;
@@ -120,7 +120,7 @@ private:
 		return std::make_pair(ADMMSolver<Real_t>(calculator), model_data);
 	}
 public:
-	BobDylan<Real_t, Model>(){}
+	SamplingCoordinator<Real_t, Model>(){}
 
 	SimulationResult<Real_t> simulate(const size_t node_count, const long seed, const Real_t t_max) {
 		std::vector<Result<Real_t>> inference_result(2 * node_count);
@@ -147,4 +147,4 @@ public:
 	}
 
 };
-#endif // !BOB_DYLAN_H
+#endif // !S_COOR_H_H
