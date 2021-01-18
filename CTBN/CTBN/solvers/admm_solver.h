@@ -4,7 +4,7 @@
 #include <tuple>
 
 #include "../likelihood_calculator/likelihood_calculator.h"
-#include "../bob_dylan.h"
+#include "../sampling_coordinator.h"
 #include "../utils/logger.h"
 
 template <class Real_t> class ADMMSolver {
