@@ -64,28 +64,23 @@ void test(long seed) {
 
 int main(int argc, char **argv)
 {	
-	if (argc != 2) {
-		return -1;
-	}
-	long seed = std::stol(argv[1]);
+	simulate_memory<ListModel<double>>(10, 20, "10_20");
+	simulate_memory<ListModel<double>>(50, 20, "50_20");
+	simulate_memory<CorrelatedModelNoInteractions<double>>(10, 20, "10_20");
+	simulate_memory<CorrelatedModelNoInteractions<double>>(50, 20, "50_20");
+	simulate_memory<CorrelatedModel<double>>(10, 20, "10_20");
+	simulate_memory<CorrelatedModel<double>>(50, 20, "50_20");
+	simulate_memory<BinaryTree<double>>(10, 20, "10_20");
+	simulate_memory<BinaryTree<double>>(50, 20, "50_20");
 
-		simulate_memory<ListModel<double>>(10, 20, "10_20");
-		simulate_memory<ListModel<double>>(50, 20, "50_20");
-		simulate_memory<CorrelatedModelNoInteractions<double>>(10, 20, "10_20");
-		simulate_memory<CorrelatedModelNoInteractions<double>>(50, 20, "50_20");
-		simulate_memory<CorrelatedModel<double>>(10, 20, "10_20");
-		simulate_memory<CorrelatedModel<double>>(50, 20, "50_20");
-		simulate_memory<BinaryTree<double>>(10, 20, "10_20");
-		simulate_memory<BinaryTree<double>>(50, 20, "50_20");
-
-		simulate_memory<ListModel<double>>(10, 50, "10_50");
-		simulate_memory<ListModel<double>>(50, 50, "50_50");
-		simulate_memory<CorrelatedModelNoInteractions<double>>(10, 50, "10_50");
-		simulate_memory<CorrelatedModelNoInteractions<double>>(50, 50, "50_50");
-		simulate_memory<CorrelatedModel<double>>(10, 50, "10_50");
-		simulate_memory<CorrelatedModel<double>>(50, 50, "50_50");
-		simulate_memory<BinaryTree<double>>(10, 50, "10_50");
-		simulate_memory<BinaryTree<double>>(50, 50, "50_50");
+	simulate_memory<ListModel<double>>(10, 50, "10_50");
+	simulate_memory<ListModel<double>>(50, 50, "50_50");
+	simulate_memory<CorrelatedModelNoInteractions<double>>(10, 50, "10_50");
+	simulate_memory<CorrelatedModelNoInteractions<double>>(50, 50, "50_50");
+	simulate_memory<CorrelatedModel<double>>(10, 50, "10_50");
+	simulate_memory<CorrelatedModel<double>>(50, 50, "50_50");
+	simulate_memory<BinaryTree<double>>(10, 50, "10_50");
+	simulate_memory<BinaryTree<double>>(50, 50, "50_50");
 
 	return 0;
 }
