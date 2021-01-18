@@ -26,11 +26,11 @@ public:
 		return this->state;
 	}
 
-	const size_t get_changing_node() const {
+	size_t get_changing_node() const {
 		return this->changing_node;
 	}
 
-	const size_t get_old_node_state() const {
+	size_t get_old_node_state() const {
 		return state.get_node_value(changing_node);
 	}
 
