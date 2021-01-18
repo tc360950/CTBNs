@@ -26,7 +26,7 @@ template <class Model> void simulate_memory(double t_max, size_t no_of_nodes, co
 
 	for (size_t i = 0; i < TRIES; i++) {
 		auto seed = std::rand();
-		BobDylan<double, Model> bob;
+		SamplingCoordinator<double, Model> bob;
 		StatisticsFactory<double, Model> factory;
 		auto result = bob.simulate(no_of_nodes, seed, t_max);
 		auto stats = factory.convert(no_of_nodes, t_max, result.model_data, result);
