@@ -1,3 +1,8 @@
+This code implements algorithm from 
+Structure learning for continuous time Bayesian networks via penalized likelihood (2020 Miasojedow, Rejchel, Cakala)
+
+and tests its performance on simulated data.
+
 To compile use provided Makefile. C++ 14 or higher version is required.
 
 Use variable NUM_THREADS in utils/parameters.cpp to set number of threads which will be used for inference. 
